@@ -50,7 +50,7 @@ jobs:
         if: runner.os != 'Windows'
         uses: golangci/golangci-lint-action@v3
         with:
-          version: $${{ matrix.golangci }}
+          version: ${{ matrix.golangci }}
           args: "--out-${NO_FUTURE}format colored-line-number"
 
       - name: Go Lint Windows
@@ -59,7 +59,7 @@ jobs:
         env:
           outformat: out-format
         with:
-          version: $${{ matrix.golangci }}
+          version: ${{ matrix.golangci }}
           args: "--%outformat% colored-line-number"
 
       - name: Go Build
