@@ -52,6 +52,8 @@ jobs:
         with:
           version: ${{ matrix.golangci }}
           args: "--out-${NO_FUTURE}format colored-line-number"
+          skip-pkg-cache: true
+          skip-build-cache: true
 
       - name: Go Lint Windows
         if: runner.os == 'Windows'
@@ -61,6 +63,8 @@ jobs:
         with:
           version: ${{ matrix.golangci }}
           args: "--%outformat% colored-line-number"
+          skip-pkg-cache: true
+          skip-build-cache: true
 
       - name: Go Build
         run: go build ./...
