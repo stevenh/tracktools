@@ -45,7 +45,6 @@ type Config struct {
 	SourceDir      string
 	Binary         string
 	Args           []string
-	Env            []string
 	Skip           map[string]bool
 	OutputTemplate string
 	OutputDir      string

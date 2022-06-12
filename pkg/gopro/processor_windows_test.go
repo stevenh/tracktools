@@ -2,6 +2,7 @@ package gopro
 
 import (
 	"fmt"
+	"os/exec"
 	"syscall"
 )
 
@@ -22,4 +23,12 @@ func sig(pid int) error {
 	}
 
 	return nil
+}
+
+// cmdSetup for windows configures a new process group so that
+// sig only effects out helper process.
+func cmdSetup(cmd *exec.Cmd) {
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
+	}
 }
