@@ -219,7 +219,7 @@ func processHelper(r io.Reader, fs *testFS) error {
 		// File must be created before the process exists.
 		fs.Create(p[1])
 
-		if err = syscall.Kill(pid, syscall.SIGINT); err != nil {
+		if err = sig(pid); err != nil {
 			return fmt.Errorf("signal pid %d:%w", pid, err)
 		}
 	}
