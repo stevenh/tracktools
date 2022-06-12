@@ -14,6 +14,7 @@ func TestOSFS(t *testing.T) {
 	o := osFS{}
 	tf, err := o.CreateTemp("", "gopro-test")
 	require.NoError(t, err)
+	require.NoError(t, tf.Close())
 
 	name := tf.Name()
 
