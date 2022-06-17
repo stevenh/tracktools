@@ -113,6 +113,26 @@ func (c *Config) Output(name string) (string, error) {
 	return buf.String(), nil
 }
 
+// Load loads a json configuration from file.
+func (c *Config) Load(file string) error {
+	f, err := baseFS.Open(file)
+	if err != nil {
+		return fmt.Errorf("config load: %w", err)
+	}
+
+	defer f.Close() // nolint: errcheck
+
+	if c == nil {
+		c = &Config{}
+	}
+	d := json.NewDecoder(f)
+	if err = d.Decode(c); err != nil {
+		return fmt.Errorf("config decode: %w", err)
+	}
+
+	return nil
+}
+
 // OutputFile represents the template used for output file processing.
 type OutputFile struct {
 	// Name excluding extension.
@@ -120,22 +140,4 @@ type OutputFile struct {
 
 	// Extension including the dot.
 	Ext string
-}
-
-// LoadConfig loads a json configuration from file.
-func LoadConfig(file string) (*Config, error) {
-	f, err := baseFS.Open(file)
-	if err != nil {
-		return nil, fmt.Errorf("config load: %w", err)
-	}
-
-	defer f.Close() // nolint: errcheck
-
-	cfg := &Config{}
-	d := json.NewDecoder(f)
-	if err = d.Decode(cfg); err != nil {
-		return nil, fmt.Errorf("config decode: %w", err)
-	}
-
-	return cfg, nil
 }

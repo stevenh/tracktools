@@ -45,11 +45,12 @@ func Cfg(cfg Config) Option {
 // Either CfgFile or Cfg must be specified.
 func CfgFile(file string) Option {
 	return func(p *Processor) error {
-		var err error
-		p.cfg, err = LoadConfig(file)
-		if err != nil {
+		c := &Config{}
+		if err := c.Load(file); err != nil {
 			return err
 		}
+
+		p.cfg = c
 
 		return p.cfg.Validate()
 	}
