@@ -46,11 +46,12 @@ type Config struct {
 	Binary         string
 	Args           []string
 	Env            []string
-	Skip           map[string]bool
+	SkipNames      []string
 	OutputTemplate string
 	OutputDir      string
 	Overwrite      bool
 
+	skip       map[string]struct{}
 	logLevel   zerolog.Level
 	inputIndex int
 	outputTmpl *template.Template
@@ -79,6 +80,11 @@ func (c *Config) Validate() error {
 		if err != nil {
 			return fmt.Errorf("parse log level %q: %w", c.LogLevel, err)
 		}
+	}
+
+	c.skip = make(map[string]struct{}, len(c.SkipNames))
+	for _, n := range c.SkipNames {
+		c.skip[n] = struct{}{}
 	}
 
 	// Locate the index of the input argument.
@@ -112,6 +118,13 @@ func (c *Config) Output(name string) (string, error) {
 	}
 
 	return buf.String(), nil
+}
+
+// Skip returns true if name should be skipped, false otherwise.
+func (c Config) Skip(name string) bool {
+	_, ok := c.skip[name]
+
+	return ok
 }
 
 // OutputFile represents the template used for output file processing.

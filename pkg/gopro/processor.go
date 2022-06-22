@@ -173,7 +173,7 @@ func (p *Processor) processSet(s *FileSet) (string, error) {
 		return "", err
 	}
 
-	if p.cfg.Skip[s.Chapters[0].Name] {
+	if p.cfg.Skip(s.Chapters[0].Name) {
 		p.log.Print("skip:", s.Chapters[0].Name)
 		return "", nil
 	}

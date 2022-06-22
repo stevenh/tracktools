@@ -13,7 +13,7 @@ var (
 	ErrNoMatch = errors.New("no match")
 
 	// ErrNoFiles is returned if no files were found.
-	ErrNoFiles = errors.New("no files")
+	ErrNoFiles = errors.New("no files found")
 )
 
 type configError string

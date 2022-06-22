@@ -103,6 +103,7 @@ func TestNewProcessor(t *testing.T) {
 		SourceDir:  ".",
 		Binary:     "ffmpeg",
 		Args:       []string{"-i", ""},
+		SkipNames:  []string{"skip1", "skip2"},
 		inputIndex: 1,
 	}
 	validData, err := json.Marshal(validCfg)
@@ -152,8 +153,13 @@ func TestNewProcessor(t *testing.T) {
 				SourceDir:  ".",
 				Binary:     "ffmpeg",
 				Args:       []string{"-i", ""},
+				SkipNames:  []string{"skip1", "skip2"},
 				inputIndex: 1,
 				logLevel:   zerolog.WarnLevel,
+				skip: map[string]struct{}{
+					"skip1": struct{}{},
+					"skip2": struct{}{},
+				},
 			},
 		},
 		{
@@ -183,7 +189,9 @@ func TestNewProcessor(t *testing.T) {
 
 			require.NoError(t, err)
 			p.testLog()
-			p.cfg.outputTmpl = nil // This is calculated so set to nil.
+
+			p.cfg.outputTmpl = nil // This is calculated so don't try and match.
+
 			require.Equal(t, tc.expected, p.cfg)
 			require.Equal(t, `{"level":"warn","message":"test"}
 `, buf.String())
