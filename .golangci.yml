@@ -16,6 +16,9 @@ linters-settings:
     min-occurrences: 4
   cyclop:
     max-complexity: 15
+  misspell:
+    ignore-words:
+      - ect
 
 linters:
   enable-all: true
@@ -43,6 +46,7 @@ linters:
     - gofumpt
     - forbidigo
     - exhaustruct
+    - nonamedreturns
 
 issues:
   exclude-use-default: false
