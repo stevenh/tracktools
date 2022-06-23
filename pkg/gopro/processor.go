@@ -25,7 +25,7 @@ type Processor struct {
 	cfg      *Config
 	log      zerolog.Logger
 	matchers []*Matcher
-	procOut  io.Writer
+	handler  func(exe string, args ...string) error
 }
 
 // Option represents an configuration option for Processor.
@@ -45,21 +45,46 @@ func Cfg(cfg Config) Option {
 // Either CfgFile or Cfg must be specified.
 func CfgFile(file string) Option {
 	return func(p *Processor) error {
-		var err error
-		p.cfg, err = LoadConfig(file)
-		if err != nil {
+		c := &Config{}
+		if err := c.Load(file); err != nil {
 			return err
 		}
+
+		p.cfg = c
 
 		return p.cfg.Validate()
 	}
 }
 
-// Logger sets output for log message for processor.
+// Output sets output for log message for processor.
 // Default is os.Stderr.
-func Logger(w io.Writer) Option {
+func Output(w io.Writer) Option {
 	return func(p *Processor) error {
 		p.log = p.log.Output(w)
+
+		return nil
+	}
+}
+
+// DefaultHandler is the default Handler function
+// which runs ffmpeg wiring up Stdout and Stderr.
+func DefaultHandler(exe string, args ...string) error {
+	cmd := exec.Command(exe, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("%s run: %w", exe, err)
+	}
+
+	return nil
+}
+
+// Handler sets a custom handler for running ffmpeg.
+// Default is DefaultHandler.
+func Handler(f func(exe string, args ...string) error) Option {
+	return func(p *Processor) error {
+		p.handler = f
 
 		return nil
 	}
@@ -71,7 +96,7 @@ func NewProcessor(options ...Option) (*Processor, error) {
 		log:      zerolog.New(os.Stderr),
 		matchers: []*Matcher{Hero5, Hero10},
 		cfg:      DefaultConfig,
-		procOut:  os.Stdout,
+		handler:  DefaultHandler,
 	}
 
 	for _, f := range options {
@@ -218,7 +243,9 @@ func (p *Processor) processSet(s *FileSet) (string, error) {
 	// Set the input file name by index.
 	p.cfg.Args[p.cfg.inputIndex] = f.Name()
 
-	if err = p.run(p.cfg.Binary, append(p.cfg.Args, output)); err != nil {
+	args := append(p.cfg.Args, output) // nolint: gocritic
+	p.log.Print("handle:", p.cfg.Binary, args)
+	if err = p.handler(p.cfg.Binary, args...); err != nil {
 		return "", err
 	}
 
@@ -234,23 +261,4 @@ func (p *Processor) processSet(s *FileSet) (string, error) {
 	}
 
 	return output, nil
-}
-
-// run runs the configured command.
-func (p *Processor) run(exe string, args []string) error {
-	p.log.Print("cmd:", exe, args)
-	cmd := exec.Command(exe, args...)
-	cmd.Stdout = p.procOut
-	cmd.Stderr = os.Stderr
-	cmd.Env = p.cfg.Env
-
-	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("%s start failed: %w", exe, err)
-	}
-
-	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("%s wait failed: %w", exe, err)
-	}
-
-	return nil
 }

@@ -111,9 +111,10 @@ const (
 	Electric EngineType = "Electric"
 )
 
-// FixType TODO(steve): document correctly.
+// FixType TODO(steve): document.
 type FixType int
 
+// FixType enums TODO(steve): document.
 const (
 	FixTypeCombustion FixType = iota
 	FixTypeSpeedAndCadence

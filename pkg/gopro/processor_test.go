@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"strconv"
@@ -157,8 +158,8 @@ func TestNewProcessor(t *testing.T) {
 				inputIndex: 1,
 				logLevel:   zerolog.WarnLevel,
 				skip: map[string]struct{}{
-					"skip1": struct{}{},
-					"skip2": struct{}{},
+					"skip1": {},
+					"skip2": {},
 				},
 			},
 		},
@@ -181,7 +182,7 @@ func TestNewProcessor(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			var buf bytes.Buffer
-			p, err := NewProcessor(append(tc.options, Logger(&buf))...)
+			p, err := NewProcessor(append(tc.options, Output(&buf))...)
 			if tc.err != nil {
 				require.Equal(t, tc.err, err)
 				return
@@ -196,15 +197,6 @@ func TestNewProcessor(t *testing.T) {
 			require.Equal(t, `{"level":"warn","message":"test"}
 `, buf.String())
 		})
-	}
-}
-
-// procOut is an Option which sets procOut for a Processor.
-func procOut(w io.Writer) Option {
-	return func(p *Processor) error {
-		p.procOut = w
-
-		return nil
 	}
 }
 
@@ -227,7 +219,7 @@ func processHelper(r io.Reader, fs *testFS) error {
 		// File must be created before the process exists.
 		fs.Create(p[1])
 
-		if err = syscall.Kill(pid, syscall.SIGINT); err != nil {
+		if err = sig(pid); err != nil {
 			return fmt.Errorf("signal pid %d:%w", pid, err)
 		}
 	}
@@ -298,7 +290,6 @@ func TestProcessorProcess(t *testing.T) {
 			cfg := *DefaultConfig
 			cfg.Binary = os.Args[0]
 			cfg.Args = append([]string{"-test.run=TestHelperProcess", "--", tc.exe}, cfg.Args...)
-			cfg.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
 
 			// Process the output of our helper.
 			pr, pw, err := os.Pipe()
@@ -317,7 +308,23 @@ func TestProcessorProcess(t *testing.T) {
 				close(errs)
 			}()
 
-			p, err := NewProcessor(Cfg(cfg), procOut(pw))
+			p, err := NewProcessor(
+				Cfg(cfg),
+				Handler(func(exe string, args ...string) error {
+					cmd := exec.Command(exe, args...)
+					cmd.Stdout = pw
+					cmd.Stderr = os.Stderr
+					cmd.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
+					// OS specific.
+					cmdSetup(cmd)
+
+					if err := cmd.Run(); err != nil {
+						return fmt.Errorf("%s run: %w", exe, err)
+					}
+
+					return nil
+				}),
+			)
 
 			require.NoError(t, err)
 

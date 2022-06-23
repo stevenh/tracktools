@@ -15,6 +15,7 @@ jobs:
     strategy:
       matrix:
         go: [1.18]
+        golangcli: [v1.46.2]
         os: [ubuntu-latest, macos-latest, windows-latest]
     name: lint
     runs-on: ${{ matrix.os }}
@@ -23,6 +24,9 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Go Cache Paths
         id: go-cache-paths
@@ -42,13 +46,32 @@ jobs:
           path: ${{ steps.go-cache-paths.outputs.go-mod }}
           key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
 
-      - name: Checkout
-      - uses: actions/checkout@v3
+      - name: Validate go generate / mod
+        if: runner.os != 'Windows'
+        run: |
+          go generate ./...
+          go mod tidy
+          git --no-pager diff && [[ 0 -eq $(git status --porcelain | wc -l) ]]
 
-      - name: Go Lint
+      - name: Go Lint Standard
+        if: runner.os != 'Windows'
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.46.2
+          version: ${{ matrix.golangci }}
+          args: "--out-${NO_FUTURE}format colored-line-number"
+          skip-pkg-cache: true
+          skip-build-cache: true
+
+      - name: Go Lint Windows
+        if: runner.os == 'Windows'
+        uses: golangci/golangci-lint-action@v3
+        env:
+          outformat: out-format
+        with:
+          version: ${{ matrix.golangci }}
+          args: "--%outformat% colored-line-number"
+          skip-pkg-cache: true
+          skip-build-cache: true
 
       - name: Go Build
         run: go build ./...
