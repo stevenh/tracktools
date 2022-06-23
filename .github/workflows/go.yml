@@ -47,6 +47,7 @@ jobs:
           key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
 
       - name: Validate go generate / mod
+        if: runner.os != 'Windows'
         run: |
           go generate ./...
           go mod tidy
