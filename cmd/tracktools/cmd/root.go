@@ -81,9 +81,7 @@ func (r *rootCommand) PersistentPreRunE(cmd *cobra.Command, args []string) error
 		return err
 	}
 
-	r.bindFlags(v, cmd)
-
-	return nil
+	return r.bindFlags(v, cmd)
 }
 
 // configSpec sets our config spec on v.
@@ -153,17 +151,23 @@ func (r *rootCommand) loadConfig(v *viper.Viper) error {
 
 // bindFlags binds each cobra flag to its associated viper config
 // from our config file.
-func (r *rootCommand) bindFlags(v *viper.Viper, cmd *cobra.Command) {
+func (r *rootCommand) bindFlags(v *viper.Viper, cmd *cobra.Command) error {
+	var err error
 	cmd.Flags().VisitAll(func(f *pflag.Flag) {
-		if f.Changed {
+		if f.Changed || err != nil {
 			// Flag has been set don't set from config.
 			return
 		}
 
 		if name := configName(f); v.IsSet(name) {
-			cmd.Flags().Set(f.Name, v.GetString(name))
+			val := v.GetString(name)
+			if err = f.Value.Set(val); err != nil {
+				err = fmt.Errorf("set flag %q to %q: %w", name, val, err)
+			}
 		}
 	})
+
+	return err
 }
 
 // RootCmd returns the root command for doc generation.

@@ -24,7 +24,7 @@ func loadConfig(name string, cfg interface{}, fs *pflag.FlagSet) error {
 		}
 
 		if v, ok := f.Annotations[cmdName]; ok && v[0] == name {
-			n := strings.ToLower(strings.Replace(f.Name, "-", "", -1))
+			n := strings.ToLower(strings.ReplaceAll(f.Name, "-", ""))
 			delete(data, n)
 		}
 	})
@@ -50,6 +50,9 @@ func configName(f *pflag.Flag) string {
 // annotate annotates all flags in fs with the command name.
 func annotate(fs *pflag.FlagSet, name string) {
 	fs.VisitAll(func(f *pflag.Flag) {
-		fs.SetAnnotation(f.Name, cmdName, []string{name})
+		if f.Annotations == nil {
+			f.Annotations = map[string][]string{}
+		}
+		f.Annotations[cmdName] = []string{name}
 	})
 }
