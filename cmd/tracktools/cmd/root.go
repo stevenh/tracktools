@@ -71,3 +71,8 @@ func initConfig() {
 		log.Print("Using config file:", viper.ConfigFileUsed())
 	}
 }
+
+// RootCmd returns the root command for doc generation.
+func RootCmd() *cobra.Command {
+	return rootCmd
+}
