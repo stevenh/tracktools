@@ -9,60 +9,51 @@ import (
 )
 
 // goproConvertCmd represents the convert command.
-var goproConvertCmd = &cobra.Command{
-	Use:   "convert",
-	Short: "Converts GoPro videos",
-	Long:  `Converts GoProv videos between formats and joins multi chapters.`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		// Load gopro convert from global config file.
-		var cfg gopro.Config
-		if err := loadConfig("gopro.convert", &cfg); err != nil {
-			return err
-		}
+type goproConvertCmd struct {
+	cfg gopro.Config
+}
 
-		// Command line overrides.
-		f := cmd.Flags()
-		source, err := f.GetString("source")
-		if err != nil {
-			return err
-		}
+func (c *goproConvertCmd) RunE(cmd *cobra.Command, args []string) error {
+	if err := loadConfig("gopro.convert", &c.cfg, cmd.Flags()); err != nil {
+		return err
+	}
 
-		if source != "" {
-			cfg.SourceDir = source
-		}
+	p, err := gopro.NewProcessor(gopro.Cfg(c.cfg))
+	if err != nil {
+		return err
+	}
 
-		output, err := f.GetString("output")
-		if err != nil {
-			return err
-		}
+	files, err := p.Process()
+	if err != nil {
+		return err
+	}
 
-		if output != "" {
-			cfg.OutputDir = output
-		}
+	log.Info().Msg(fmt.Sprintf("Processed %d files\n", len(files)))
+	for _, f := range files {
+		log.Info().Msg(f)
+	}
 
-		p, err := gopro.NewProcessor(gopro.Cfg(cfg))
-		if err != nil {
-			return err
-		}
+	return nil
+}
 
-		files, err := p.Process()
-		if err != nil {
-			return err
-		}
+func addGoproConvert() {
+	c := goproConvertCmd{}
 
-		log.Info().Msg(fmt.Sprintf("Processed %d files\n", len(files)))
-		for _, f := range files {
-			log.Info().Msg(f)
-		}
+	cmd := &cobra.Command{
+		Use:   "convert",
+		Short: "Converts GoPro videos",
+		Long:  `Converts GoPro videos between formats and joins multi chapters.`,
+		RunE:  c.RunE,
+	}
 
-		return nil
-	},
+	fs := cmd.Flags()
+	fs.StringVar(&c.cfg.SourceDir, "source-dir", "", "override source directory")
+	fs.StringVar(&c.cfg.OutputDir, "output-dir", "", "override output directory")
+	annotate(fs, "gopro.convert")
+
+	goproCmd.AddCommand(cmd)
 }
 
 func init() { // nolint: gochecknoinits
-	goproCmd.AddCommand(goproConvertCmd)
-
-	f := goproConvertCmd.Flags()
-	f.String("source", "", "override config source directory")
-	f.String("output", "", "override config output directory")
+	addGoproConvert()
 }

@@ -10,7 +10,7 @@ between different track app formats and joining GoPro chaptered videos.
 ### Options
 
 ```
-  -c, --config string   config file (default is $HOME/.tracktools.yaml)
+  -c, --config string   config file (Default .tracktools.toml)
   -h, --help            help for tracktools
   -v, --verbose count   verbose output
 ```

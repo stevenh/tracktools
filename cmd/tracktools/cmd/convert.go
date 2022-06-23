@@ -11,24 +11,36 @@ import (
 	"github.com/stevenh/tracktools/pkg/trackaddict"
 )
 
+// Encoders & Decoders.
+const (
+	trackAddict = "trackaddict"
+	lapTimer    = "laptimer"
+)
+
 type convertCmd struct {
-	decoder  string
-	encoder  string
-	compress bool
+	Decoder  string
+	Encoder  string
+	Compress bool
+
+	// Convert options.
+	Track   string
+	Vehicle string
+	Tags    []string
+	Note    string
 }
 
 func (c *convertCmd) RunE(cmd *cobra.Command, args []string) (err error) { // nolint: nonamedreturns
 	// Validate encoder / decoder.
-	switch c.decoder {
-	case "trackaddict":
+	switch c.Decoder {
+	case trackAddict:
 	default:
-		return fmt.Errorf("convert: unknown decoder: %q", c.decoder)
+		return fmt.Errorf("convert: unknown decoder: %q", c.Decoder)
 	}
 
-	switch c.encoder {
-	case "laptimer":
+	switch c.Encoder {
+	case lapTimer:
 	default:
-		return fmt.Errorf("convert: unknown encoder: %q", c.encoder)
+		return fmt.Errorf("convert: unknown encoder: %q", c.Encoder)
 	}
 
 	// Open input / output if needed.
@@ -80,7 +92,13 @@ func (c *convertCmd) trackAddict2LapTimer(r io.Reader, w io.Writer) error {
 		return fmt.Errorf("convert: trackaddict decode: %w", err)
 	}
 
-	ta, err := convert.NewTrackAddict()
+	taOpts := []convert.Option{
+		convert.TrackOpt(c.Track),
+		convert.VehicleOpt(c.Vehicle),
+		convert.TagsOpt(c.Tags...),
+		convert.NoteOpt(c.Note),
+	}
+	ta, err := convert.NewTrackAddict(taOpts...)
 	if err != nil {
 		return fmt.Errorf("convert: new trackaddict converter: %w", err)
 	}
@@ -90,7 +108,11 @@ func (c *convertCmd) trackAddict2LapTimer(r io.Reader, w io.Writer) error {
 		return fmt.Errorf("convert: laptimer: %w", err)
 	}
 
-	enc, err := laptimer.NewEncoder(w)
+	encOpts := []laptimer.EncoderOpt{}
+	if c.Compress {
+		encOpts = append(encOpts, laptimer.Compress())
+	}
+	enc, err := laptimer.NewEncoder(w, encOpts...)
 	if err != nil {
 		return fmt.Errorf("convert: new laptimer encoder: %w", err)
 	}
@@ -113,10 +135,15 @@ func addConvertCmd() {
 		RunE:  c.RunE,
 	}
 
-	f := cmd.Flags()
-	f.StringVar(&c.decoder, "decoder", "trackaddict", "The decoder to use for the input")
-	f.StringVar(&c.encoder, "encoder", "laptimer", "The encoder of use for the output")
-	f.BoolVar(&c.compress, "compress", false, "Compress the output")
+	fs := cmd.Flags()
+	fs.StringVar(&c.Decoder, "decoder", "", "Override Decoder for the input")
+	fs.StringVar(&c.Encoder, "encoder", "", "Override Encoder for the output")
+	fs.StringVar(&c.Track, "track", "", "Override track for the output")
+	fs.StringVar(&c.Vehicle, "vehicle", "", "Override vehicle for the output")
+	fs.StringArrayVar(&c.Tags, "tags", nil, "Override tags for the output")
+	fs.StringVar(&c.Note, "note", "", "Override tags for the output")
+	fs.BoolVar(&c.Compress, "compress", false, "Override Compress option for output")
+	annotate(fs, "convert")
 
 	rootCmd.AddCommand(cmd)
 }

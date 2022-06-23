@@ -4,7 +4,7 @@ Converts GoPro videos
 
 ### Synopsis
 
-Converts GoProv videos between formats and joins multi chapters.
+Converts GoPro videos between formats and joins multi chapters.
 
 ```
 tracktools gopro convert [flags]
@@ -13,15 +13,15 @@ tracktools gopro convert [flags]
 ### Options
 
 ```
-  -h, --help            help for convert
-      --output string   override config output directory
-      --source string   override config source directory
+  -h, --help                help for convert
+      --output-dir string   override output directory
+      --source-dir string   override source directory
 ```
 
 ### Options inherited from parent commands
 
 ```
-  -c, --config string   config file (default is $HOME/.tracktools.yaml)
+  -c, --config string   config file (Default .tracktools.toml)
   -v, --verbose count   verbose output
 ```
 

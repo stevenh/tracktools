@@ -15,7 +15,7 @@ Provides a set of commands for manipulating GoPro videos.
 ### Options inherited from parent commands
 
 ```
-  -c, --config string   config file (default is $HOME/.tracktools.yaml)
+  -c, --config string   config file (Default .tracktools.toml)
   -v, --verbose count   verbose output
 ```
 

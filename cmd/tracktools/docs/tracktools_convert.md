@@ -13,16 +13,20 @@ tracktools convert input-file output-file [flags]
 ### Options
 
 ```
-      --compress         Compress the output
-      --decoder string   The decoder to use for the input (default "trackaddict")
-      --encoder string   The encoder of use for the output (default "laptimer")
-  -h, --help             help for convert
+      --compress           Override Compress option for output
+      --decoder string     Override Decoder for the input
+      --encoder string     Override Encoder for the output
+  -h, --help               help for convert
+      --note string        Override tags for the output
+      --tags stringArray   Override tags for the output
+      --track string       Override track for the output
+      --vehicle string     Override vehicle for the output
 ```
 
 ### Options inherited from parent commands
 
 ```
-  -c, --config string   config file (default is $HOME/.tracktools.yaml)
+  -c, --config string   config file (Default .tracktools.toml)
   -v, --verbose count   verbose output
 ```
 
