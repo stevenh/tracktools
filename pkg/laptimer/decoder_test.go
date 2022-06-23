@@ -29,11 +29,11 @@ func TestDecoder(t *testing.T) {
 	}{
 		{
 			name: "single-lap",
-			file: "../../testdata/LapTimer-0009-20220607-110056.hlptr",
+			file: "../../test/LapTimer-0009-20220607-110056.hlptr",
 		},
 		{
 			name: "multi-lap-obd",
-			file: "../../testdata/LapTimer-All-20220621-092410.hlptr",
+			file: "../../test/LapTimer-All-20220621-092410.hlptr",
 		},
 	}
 
