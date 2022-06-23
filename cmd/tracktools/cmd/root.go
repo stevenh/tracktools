@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"errors"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
@@ -70,7 +71,8 @@ func initConfig() {
 
 	// Load the config from file falling back to our default embedded one.
 	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+		var nf viper.ConfigFileNotFoundError
+		if errors.As(err, &nf) {
 			buf := bytes.NewBuffer(defaultConfig)
 			if err = viper.ReadConfig(buf); err != nil {
 				log.Fatal().Err(err).Msg("load default config")
