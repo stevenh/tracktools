@@ -8,7 +8,7 @@ import (
 )
 
 func TestDecoder(t *testing.T) {
-	f, err := os.Open("../../testdata/Log-20220531-085930 Goodwood Motorcircuit - 2.57.527.csv")
+	f, err := os.Open("../../test/Log-20220531-085930 Goodwood Motorcircuit - 2.57.527.csv")
 	require.NoError(t, err)
 	defer f.Close() // nolint: errcheck
 
