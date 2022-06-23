@@ -1,3 +1,6 @@
+[root]
+Verbose = 0
+
 [gopro.convert]
 Binary = "ffmpeg"
 Args = [
@@ -23,5 +26,13 @@ SourceDir = "."
 OutputTemplate = "{{.Name}}-JOINED{{.Ext}}"
 LogLevel = "warn"
 Overwrite = false # Overwrite existing files.
-Env = [] # Environment to pass to ffmpeg.
 SkipNames = [] # Filenames to skip
+
+[convert]
+Decoder = "trackaddict"
+Encoder = "laptimer"
+Compress = false
+Track = ""
+Vehicle = ""
+Tags = []
+Note = ""

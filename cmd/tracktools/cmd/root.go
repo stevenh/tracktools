@@ -3,19 +3,25 @@ package cmd
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
-var (
-	cfgFile string
-	verbose int
+const (
+	defaultConfigName = ".tracktools"
+	defaultConfigType = "toml"
+	debugLevel        = 1
+	traceLevel        = 2
+)
 
+var (
 	// rootCmd represents the base command when called without any subcommands.
 	rootCmd = &cobra.Command{
 		Use:   "tracktools",
@@ -24,6 +30,20 @@ var (
 between different track app formats and joining GoPro chaptered videos.`,
 	}
 )
+
+type rootCommand struct {
+	Config  string
+	Verbose int
+}
+
+func newRoot() {
+	r := &rootCommand{}
+	rootCmd.PersistentPreRunE = r.PersistentPreRunE
+
+	pf := rootCmd.PersistentFlags()
+	pf.StringVarP(&r.Config, "config", "c", "", "config file (Default .tracktools.toml)")
+	pf.CountVarP(&r.Verbose, "verbose", "v", "verbose output")
+}
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -36,55 +56,114 @@ func Execute() {
 
 func init() { // nolint: gochecknoinits
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	cobra.OnInitialize(initConfig)
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-
-	pf := rootCmd.PersistentFlags()
-	pf.StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.tracktools.yaml)")
-	pf.CountVarP(&verbose, "verbose", "v", "verbose output")
+	newRoot()
 }
 
-func initConfig() {
-	switch verbose {
-	case 1:
+// PersistentPreRunE initialises our config.
+func (r *rootCommand) PersistentPreRunE(cmd *cobra.Command, args []string) error {
+	v := viper.GetViper()
+
+	switch r.Verbose {
+	case debugLevel:
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	case 2:
+	case traceLevel:
 		zerolog.SetGlobalLevel(zerolog.TraceLevel)
 	}
 
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			log.Fatal().Err(err).Msg("failed to determine home directory")
-		}
-
-		viper.AddConfigPath(".")
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".tracktools")
+	if err := r.setConfigSpec(v); err != nil {
+		return err
 	}
 
-	viper.AutomaticEnv()
+	v.AutomaticEnv()
 
-	// Load the config from file falling back to our default embedded one.
-	if err := viper.ReadInConfig(); err != nil {
+	if err := r.loadConfig(v); err != nil {
+		return err
+	}
+
+	r.bindFlags(v, cmd)
+
+	return nil
+}
+
+// configSpec sets our config spec on v.
+// If we have a specified Config this takes preference otherwise
+// we search in the following directories in order:
+// * Current working directory
+// * Users home directory.
+func (r *rootCommand) setConfigSpec(v *viper.Viper) error {
+	if r.Config != "" {
+		// Use config file from the flag.
+		v.SetConfigFile(r.Config)
+		return nil
+	}
+
+	// Find home directory.
+	home, err := homedir.Dir()
+	if err != nil {
+		return fmt.Errorf("home directory: %w", err)
+	}
+
+	v.AddConfigPath(".")
+	v.AddConfigPath(home)
+	v.SetConfigName(defaultConfigName)
+
+	return nil
+}
+
+// loadConfig loads the config from file falling back to
+// the default embedded one if the config file location wasn't
+// specified and we didn't find a file, so we get sensible defaults.
+func (r *rootCommand) loadConfig(v *viper.Viper) error {
+	if err := v.ReadInConfig(); err != nil {
 		var nf viper.ConfigFileNotFoundError
-		if errors.As(err, &nf) {
-			buf := bytes.NewBuffer(defaultConfig)
-			if err = viper.ReadConfig(buf); err != nil {
-				log.Fatal().Err(err).Msg("load default config")
-			}
-			log.Print("Using default embedded config")
+		if !errors.As(err, &nf) {
+			return fmt.Errorf("load config: %w", err)
+		}
+
+		if r.Config != "" {
+			// Config was specified so don't fall back to default.
+			return err
+		}
+
+		// ReadConfig needs to be told the type of config to expect.
+		v.SetConfigType(defaultConfigType)
+
+		buf := bytes.NewBuffer(defaultConfig)
+		if err = v.ReadConfig(buf); err != nil {
+			return fmt.Errorf("load default config: %w", err)
+		}
+
+		// If the config type is invalid it will just produce no results
+		// so check we got a valid config.
+		if len(v.AllKeys()) == 0 {
+			return fmt.Errorf("load default config: %w", err)
+		}
+
+		log.Print("Using default embedded config")
+		log.Trace().Msg(string(defaultConfig))
+
+		return nil
+	}
+
+	log.Print("Using config file: ", v.ConfigFileUsed())
+
+	return nil
+}
+
+// bindFlags binds each cobra flag to its associated viper config
+// from our config file.
+func (r *rootCommand) bindFlags(v *viper.Viper, cmd *cobra.Command) {
+	cmd.Flags().VisitAll(func(f *pflag.Flag) {
+		if f.Changed {
+			// Flag has been set don't set from config.
 			return
 		}
 
-		log.Fatal().Err(err).Msg("load config")
-	}
-
-	log.Print("Using config file: ", viper.ConfigFileUsed())
+		if name := configName(f); v.IsSet(name) {
+			cmd.Flags().Set(f.Name, v.GetString(name))
+		}
+	})
 }
 
 // RootCmd returns the root command for doc generation.
