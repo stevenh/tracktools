@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
@@ -67,9 +68,21 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err == nil {
-		log.Print("Using config file:", viper.ConfigFileUsed())
+	// Load the config from file falling back to our default embedded one.
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			buf := bytes.NewBuffer(defaultConfig)
+			if err = viper.ReadConfig(buf); err != nil {
+				log.Fatal().Err(err).Msg("load default config")
+			}
+			log.Print("Using default embedded config")
+			return
+		}
+
+		log.Fatal().Err(err).Msg("load config")
 	}
+
+	log.Print("Using config file: ", viper.ConfigFileUsed())
 }
 
 // RootCmd returns the root command for doc generation.

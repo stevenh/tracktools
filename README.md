@@ -17,7 +17,7 @@ go install github.com/stevenh/tracktools/cmd/tracktools@latest
 ```
 This tool uses [Cobra](https://github.com/spf13/cobra) so supports full interactive command line help which can also be found in [markdown](cmd/tracktools/docs/tracktools.md).
 
-If you want to use the [GoPro](https://gopro.com/) functionality you will also need a working install of [FFmpeg](https://ffmpeg.org/) which can be [downloaded here](https://ffmpeg.org/download.html). Once installed if it's not in your path you can configure the `Binary` in [.tracktools.toml](cmd/tracktools/.tracktools.toml#L2) which can be placed in your home directory.
+If you want to use the [GoPro](https://gopro.com/) functionality you will also need a working install of [FFmpeg](https://ffmpeg.org/) which can be [downloaded here](https://ffmpeg.org/download.html). Once installed if it's not in your path you can configure the `Binary` in [.tracktools.toml](cmd/tracktools/cmd/.tracktools.toml#L2) which can be placed in your home directory.
 
 ### Golang packages
 To use the packages:
