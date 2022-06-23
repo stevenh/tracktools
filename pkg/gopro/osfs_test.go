@@ -14,6 +14,7 @@ func TestOSFS(t *testing.T) {
 	o := osFS{}
 	tf, err := o.CreateTemp("", "gopro-test")
 	require.NoError(t, err)
+	require.NoError(t, tf.Close())
 
 	name := tf.Name()
 
@@ -32,11 +33,7 @@ func TestOSFS(t *testing.T) {
 	require.NoError(t, f.Close())
 
 	dirs, err := o.ReadDir(name)
-	require.Equal(t, &fs.PathError{
-		Op:   "readdirent",
-		Path: name,
-		Err:  syscall.ENOTDIR,
-	}, err)
+	require.ErrorIs(t, err, syscall.ENOTDIR)
 	require.Equal(t, []fs.DirEntry{}, dirs)
 
 	err = o.Remove(name)

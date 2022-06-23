@@ -19,7 +19,7 @@ const (
 type DB struct {
 	Name string `xml:"name"`
 	Laps []Lap  `xml:"lap"`
-	// Vechiles being a slice with one vehcile per looks like a bug in LapTimer
+	// Vehicles being a slice with one vehcile per looks like a bug in LapTimer
 	// but is currently how the data is exported by v24.6.
 	Vehicles []Vehicles `xml:"vehicles,omitempty"`
 	XMLName  struct{}   `xml:"LapTimerDB"`
