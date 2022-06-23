@@ -43,25 +43,46 @@ func (f *tmpFile) Name() string {
 }
 
 type testFS struct {
-	fstest.MapFS
+	mapFS        fstest.MapFS
+	mtx          sync.Mutex
 	tempFiles    []*tmpFile
 	createdFiles []string
 }
 
 func newTestFS() *testFS {
 	return &testFS{
-		MapFS: make(fstest.MapFS),
+		mapFS: make(fstest.MapFS),
 	}
 }
 
+func (t *testFS) Open(name string) (fs.File, error) {
+	t.mtx.Lock()
+	defer t.mtx.Unlock()
+
+	return t.mapFS.Open(name)
+}
+
+func (t *testFS) Stat(name string) (fs.FileInfo, error) {
+	t.mtx.Lock()
+	defer t.mtx.Unlock()
+
+	return t.mapFS.Stat(name)
+}
+
 func (t *testFS) CreateTemp(dir, pattern string) (tempFile, error) { // nolint: ireturn
+	t.mtx.Lock()
+	defer t.mtx.Unlock()
+
 	f := &tmpFile{dir: dir, pattern: pattern}
 	t.tempFiles = append(t.tempFiles, f)
 	return f, nil
 }
 
 func (t *testFS) Chtimes(name string, atime time.Time, mtime time.Time) error {
-	f, ok := t.MapFS[name]
+	t.mtx.Lock()
+	defer t.mtx.Unlock()
+
+	f, ok := t.mapFS[name]
 	if !ok {
 		return &fs.PathError{
 			Op:   "chtimes",
@@ -76,7 +97,10 @@ func (t *testFS) Chtimes(name string, atime time.Time, mtime time.Time) error {
 }
 
 func (t *testFS) Remove(name string) error {
-	if _, ok := t.MapFS[name]; !ok {
+	t.mtx.Lock()
+	defer t.mtx.Unlock()
+
+	if _, ok := t.mapFS[name]; !ok {
 		return &fs.PathError{
 			Op:   "remove",
 			Path: name,
@@ -84,14 +108,17 @@ func (t *testFS) Remove(name string) error {
 		}
 	}
 
-	delete(t.MapFS, name)
+	delete(t.mapFS, name)
 
 	return nil
 }
 
 func (t *testFS) Create(name string) {
+	t.mtx.Lock()
+	defer t.mtx.Unlock()
+
 	f := &fstest.MapFile{ModTime: time.Now()}
-	t.MapFS[name] = f
+	t.mapFS[name] = f
 	t.createdFiles = append(t.createdFiles, name)
 }
 
@@ -117,7 +144,7 @@ func TestNewProcessor(t *testing.T) {
 
 	// Use an in memory file system for testing.
 	baseFS = &testFS{
-		MapFS: fstest.MapFS{
+		mapFS: fstest.MapFS{
 			"valid-config.json": {
 				Data: validData,
 			},
@@ -280,7 +307,7 @@ func TestProcessorProcess(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			tfs := newTestFS()
 			for _, n := range tc.files {
-				tfs.MapFS[n] = &fstest.MapFile{ModTime: now}
+				tfs.mapFS[n] = &fstest.MapFile{ModTime: now}
 			}
 
 			baseFS = tfs
@@ -346,7 +373,7 @@ func TestProcessorProcess(t *testing.T) {
 
 			for i, name := range tfs.createdFiles {
 				// Check the file has the expected modification time.
-				f, ok := tfs.MapFS[name]
+				f, ok := tfs.mapFS[name]
 				require.True(t, ok)
 				require.Equal(t, now, f.ModTime)
 
