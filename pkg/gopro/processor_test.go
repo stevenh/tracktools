@@ -69,7 +69,7 @@ func (t *testFS) Stat(name string) (fs.FileInfo, error) {
 	return t.mapFS.Stat(name)
 }
 
-func (t *testFS) CreateTemp(dir, pattern string) (tempFile, error) { // nolint: ireturn
+func (t *testFS) CreateTemp(dir, pattern string) (tempFile, error) {
 	t.mtx.Lock()
 	defer t.mtx.Unlock()
 

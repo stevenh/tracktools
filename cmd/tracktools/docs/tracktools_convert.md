@@ -17,10 +17,11 @@ tracktools convert input-file output-file [flags]
       --decoder string     Override Decoder for the input
       --encoder string     Override Encoder for the output
   -h, --help               help for convert
-      --note string        Override tags for the output
-      --tags stringArray   Override tags for the output
-      --track string       Override track for the output
-      --vehicle string     Override vehicle for the output
+      --note string        Override Note for the output
+      --start-date date    Override StartDate option for output (format YYYY-MM-DD) (default 0001-01-01)
+      --tags stringArray   Override Tags for the output
+      --track string       Override Track for the output
+      --vehicle string     Override Vehicle for the output
 ```
 
 ### Options inherited from parent commands

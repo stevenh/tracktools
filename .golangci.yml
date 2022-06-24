@@ -19,6 +19,14 @@ linters-settings:
   misspell:
     ignore-words:
       - ect
+  ireturn:
+    allow:
+      - anon
+      - error
+      - empty
+      - stdlib
+      - (or|er)$
+      - tempFile
 
 linters:
   enable-all: true

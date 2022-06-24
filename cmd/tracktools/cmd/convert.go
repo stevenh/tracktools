@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/stevenh/tracktools/pkg/convert"
@@ -23,10 +24,11 @@ type convertCmd struct {
 	Compress bool
 
 	// Convert options.
-	Track   string
-	Vehicle string
-	Tags    []string
-	Note    string
+	Track     string
+	Vehicle   string
+	Tags      []string
+	Note      string
+	StartDate date
 }
 
 func (c *convertCmd) RunE(cmd *cobra.Command, args []string) (err error) { // nolint: nonamedreturns
@@ -97,6 +99,7 @@ func (c *convertCmd) trackAddict2LapTimer(r io.Reader, w io.Writer) error {
 		convert.VehicleOpt(c.Vehicle),
 		convert.TagsOpt(c.Tags...),
 		convert.NoteOpt(c.Note),
+		convert.StartDateOpt(time.Time(c.StartDate)),
 	}
 	ta, err := convert.NewTrackAddict(taOpts...)
 	if err != nil {
@@ -138,11 +141,12 @@ func addConvertCmd() {
 	fs := cmd.Flags()
 	fs.StringVar(&c.Decoder, "decoder", "", "Override Decoder for the input")
 	fs.StringVar(&c.Encoder, "encoder", "", "Override Encoder for the output")
-	fs.StringVar(&c.Track, "track", "", "Override track for the output")
-	fs.StringVar(&c.Vehicle, "vehicle", "", "Override vehicle for the output")
-	fs.StringArrayVar(&c.Tags, "tags", nil, "Override tags for the output")
-	fs.StringVar(&c.Note, "note", "", "Override tags for the output")
+	fs.StringVar(&c.Track, "track", "", "Override Track for the output")
+	fs.StringVar(&c.Vehicle, "vehicle", "", "Override Vehicle for the output")
+	fs.StringArrayVar(&c.Tags, "tags", nil, "Override Tags for the output")
+	fs.StringVar(&c.Note, "note", "", "Override Note for the output")
 	fs.BoolVar(&c.Compress, "compress", false, "Override Compress option for output")
+	fs.Var(&c.StartDate, "start-date", "Override StartDate option for output (format YYYY-MM-DD)")
 	annotate(fs, "convert")
 
 	rootCmd.AddCommand(cmd)
