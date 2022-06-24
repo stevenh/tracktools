@@ -46,9 +46,9 @@ type Lap struct {
 	AmbientTemp      Float1dp  `xml:"ambientTemp,omitempty"`
 	AmbientPressure  Float0dp  `xml:"ambientPressure,omitempty"`  // TODO(steve): Is this in hPa?
 	RelativeHumidity Float2dp  `xml:"relativeHumidity,omitempty"` // TODO(steve): Percentage?
-	Videos           []Video   `xml:"video"`
+	Videos           []Video   `xml:"video,omitempty"`
 	Note             string    `xml:"note,omitempty"`
-	Tags             Tags      `xml:"tags"`
+	Tags             Tags      `xml:"tags,omitempty"`
 	Recording        Recording `xml:"recording"`
 }
 

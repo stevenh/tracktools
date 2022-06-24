@@ -32,6 +32,10 @@ type convertCmd struct {
 }
 
 func (c *convertCmd) RunE(cmd *cobra.Command, args []string) (err error) { // nolint: nonamedreturns
+	if err := loadConfig(cmd, c); err != nil {
+		return err
+	}
+
 	// Validate encoder / decoder.
 	switch c.Decoder {
 	case trackAddict:

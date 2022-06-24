@@ -34,6 +34,6 @@ Encoder = "laptimer"
 Compress = false
 Track = ""
 Vehicle = ""
-Tags = []
+Tags = ["Me"]
 Note = ""
 StartDate = ""
