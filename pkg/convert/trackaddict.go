@@ -22,6 +22,8 @@ type TrackAddict struct {
 	predictor  interp.FittablePredictor
 	diffStatus laptimer.DifferentialStatus
 	posFixing  laptimer.PositionFixing
+	startDate  time.Time
+	dateAdjust time.Duration
 }
 
 // Option represents a TrackAddict option.
@@ -100,6 +102,15 @@ func PositionOpt(value laptimer.PositionFixing) Option {
 	}
 }
 
+// StartDateOpt overrides the start date for times in the output of a TrackAddict.
+func StartDateOpt(date time.Time) Option {
+	return func(ta *TrackAddict) error {
+		ta.startDate = date
+
+		return nil
+	}
+}
+
 // NewTrackAddict creates a new TrackAddict with a given set of options.
 func NewTrackAddict(options ...Option) (*TrackAddict, error) {
 	c := &TrackAddict{
@@ -133,6 +144,10 @@ func (ta *TrackAddict) LapTimer(s *trackaddict.Session) (*laptimer.DB, error) {
 
 	// First lap is the outlap and last is the in lap.
 	// TODO(steve): should we filter it better?
+	if len(s.Laps) < 3 {
+		return db, nil
+	}
+
 	fixID := 1
 	for _, l := range s.Laps[1 : len(s.Laps)-1] {
 		lap, dist := ta.lapTimerLap(l, vehicle, fixID)
@@ -163,8 +178,14 @@ func (ta *TrackAddict) lapTimerLap(l *trackaddict.Lap, vehicle string, id int) (
 	var dist, d float64
 	r := l.Records[0]
 	lastGPS := r.GPS
-	lap.Date = laptimer.LapDate(r.Time)
 	firstNow := r.Now
+
+	if !ta.startDate.IsZero() && ta.dateAdjust == 0 {
+		y, m, d := r.Time.UTC().Date()
+		t := time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
+		ta.dateAdjust = ta.startDate.Sub(t)
+	}
+	lap.Date = laptimer.LapDate(r.Time.Add(ta.dateAdjust))
 
 	for j, r := range l.Records {
 		if j != 0 && !r.GPS.Update {
@@ -196,7 +217,7 @@ func (ta *TrackAddict) lapTimerLap(l *trackaddict.Lap, vehicle string, id int) (
 func (ta *TrackAddict) lapTimerFix(id int, dist float64, r trackaddict.Record, firstNow time.Duration) laptimer.Fix {
 	f := laptimer.Fix{
 		ID:   id,
-		Date: laptimer.FixDate(r.Time),
+		Date: laptimer.FixDate(r.Time.Add(ta.dateAdjust)),
 		Coordinate: laptimer.AltitudeCoordinate{
 			Coordinate: laptimer.Coordinate{
 				Longitude: r.GPS.Longitude,
