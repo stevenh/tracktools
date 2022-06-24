@@ -26,7 +26,7 @@ func (osFS) Stat(name string) (fs.FileInfo, error) {
 }
 
 // CreateTemp implements procFS.
-func (osFS) CreateTemp(dir, pattern string) (tempFile, error) { // nolint: ireturn
+func (osFS) CreateTemp(dir, pattern string) (tempFile, error) {
 	return os.CreateTemp(filepath.FromSlash(dir), pattern)
 }
 
