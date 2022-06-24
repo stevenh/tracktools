@@ -32,6 +32,10 @@ func TestDecoder(t *testing.T) {
 			file: "../../test/LapTimer-0009-20220607-110056.hlptr",
 		},
 		{
+			name: "single-lap-tpms",
+			file: "../../test/LapTimer-0060-20220624-164840.hlptr",
+		},
+		{
 			name: "multi-lap-obd",
 			file: "../../test/LapTimer-All-20220621-092410.hlptr",
 		},

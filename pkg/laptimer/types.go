@@ -443,6 +443,9 @@ type Fix struct {
 	// OBD provides OBD data if available and is
 	// interpolated to GPS storage rate.
 	OBD *OBD `xml:"obd,omitempty"`
+
+	// TPMS provides tyre pressure monitoring data.
+	TPMS *TPMS `xml:"tpms,omitempty"`
 }
 
 // Coordinate represents a GPS coordinate without altitude.
@@ -888,4 +891,15 @@ func (s *SyncPoint) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error
 	*s = SyncPoint(sec*int64(time.Second) + cs*10*int64(time.Millisecond))
 
 	return nil
+}
+
+// TPMS represents Tyre Pressure Monitoring System data.
+type TPMS struct {
+	Tyres []TPMSTyre `xml:"tire"`
+}
+
+// TPMSTyre represents Tyre Pressure Monitoring System tyre.
+type TPMSTyre struct {
+	Position    TyrePosition `xml:"tirePosition"`
+	Temperature Float1dp     `xml:"temperatures"`
 }
