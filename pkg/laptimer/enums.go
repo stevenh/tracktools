@@ -121,3 +121,14 @@ const (
 	FixTypeElectric
 	FixTypeHybrid
 )
+
+// TyrePosition represents a tyre position in TPMS monitoring.
+type TyrePosition int
+
+// TyrePosistions for TPMS.
+const (
+	FrontLeft TyrePosition = 2 + iota
+	FrontRight
+	RearLeft
+	RearRight
+)

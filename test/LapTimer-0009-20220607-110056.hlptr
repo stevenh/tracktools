@@ -3101,7 +3101,7 @@
 			<maxTorque>770</maxTorque>
 			<maxPowerRPM>7500</maxPowerRPM>
 			<maxPower>530</maxPower>
-			<vin>SBM14FCC5KW004330</vin>
+			<vin>XXXX</vin>
 			<gears>
 				<gear>1,3.980000</gear>
 				<gear>2,2.610000</gear>
