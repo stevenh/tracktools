@@ -4,55 +4,62 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/iancoleman/strcase"
 	"github.com/mitchellh/mapstructure"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
 const (
-	cmdName = "tracktools_annotation_cmd"
+	cmdNameAnno = "tracktools_annotation_cmd"
 )
 
-// loadConfig loads a config section into cfg skipping values which
-// have already been set by flags.
-func loadConfig(name string, cfg interface{}, fs *pflag.FlagSet) error {
+// loadConfig loads a config section for cmd into cfg skipping
+// values which have already been set by flags.
+func loadConfig(cmd *cobra.Command, cfg any) error {
+	name := cmdConfigName(cmd)
 	data := viper.GetStringMap(name)
-	fs.VisitAll(func(f *pflag.Flag) {
-		if !f.Changed {
-			return
-		}
+	log.Trace().Str("cmd", name).Fields(data).Msg("Loading config")
 
-		if v, ok := f.Annotations[cmdName]; ok && v[0] == name {
+	// Remove entries which have been overridden by command line flags.
+	cmd.Flags().Visit(func(f *pflag.Flag) {
+		if v, ok := f.Annotations[cmdNameAnno]; ok && v[0] == name {
 			n := strings.ToLower(strings.ReplaceAll(f.Name, "-", ""))
 			delete(data, n)
+			log.Trace().Str("flag", n).Msg("skipped")
 		}
 	})
 
-	if err := mapstructure.Decode(data, &cfg); err != nil {
-		return fmt.Errorf("decode cfg: %w", err)
+	// Decode the remaining config into cfg.
+	if err := mapstructure.Decode(data, cfg); err != nil {
+		return fmt.Errorf("load config: decode: %w", err)
 	}
+
+	log.Trace().
+		Str("cmd", name).
+		Str("cfg", fmt.Sprintf("%#v", cfg)).
+		Msg("Loaded config")
 
 	return nil
 }
 
-// configName returns the fully qualified name of f according to its
-// annotations.
-func configName(f *pflag.Flag) string {
-	if v, ok := f.Annotations[cmdName]; ok {
-		n := strcase.ToCamel(f.Name)
-		return fmt.Sprintf("%s.%s", v[0], n)
-	}
-
-	return f.Name
-}
-
-// annotate annotates all flags in fs with the command name.
+// annotate annotates all flags in fs with the config name.
 func annotate(fs *pflag.FlagSet, name string) {
 	fs.VisitAll(func(f *pflag.Flag) {
 		if f.Annotations == nil {
 			f.Annotations = map[string][]string{}
 		}
-		f.Annotations[cmdName] = []string{name}
+		f.Annotations[cmdNameAnno] = []string{name}
 	})
+}
+
+// cmdConfigName returns the config name of cmd.
+func cmdConfigName(cmd *cobra.Command) string {
+	parts := strings.Split(cmd.CommandPath(), " ")
+	if len(parts) == 1 {
+		return ""
+	}
+
+	return strings.Join(parts[1:], ".")
 }

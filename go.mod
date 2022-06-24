@@ -3,7 +3,6 @@ module github.com/stevenh/tracktools
 go 1.18
 
 require (
-	github.com/iancoleman/strcase v0.2.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/rs/zerolog v1.27.0
