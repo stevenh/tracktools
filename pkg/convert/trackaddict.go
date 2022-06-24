@@ -150,9 +150,7 @@ func (ta *TrackAddict) LapTimer(s *trackaddict.Session) (*laptimer.DB, error) {
 
 	fixID := 1
 	for _, l := range s.Laps[1 : len(s.Laps)-1] {
-		lap, dist := ta.lapTimerLap(l, vehicle, fixID)
-		lap.OverallDistance = round1dp(dist)
-
+		lap := ta.lapTimerLap(l, vehicle, fixID)
 		db.Laps = append(db.Laps, lap)
 		fixID += len(lap.Recording.Fixes)
 	}
@@ -161,18 +159,19 @@ func (ta *TrackAddict) LapTimer(s *trackaddict.Session) (*laptimer.DB, error) {
 }
 
 // lapTimerLap returns laptimer.Lap representation of l.
-func (ta *TrackAddict) lapTimerLap(l *trackaddict.Lap, vehicle string, id int) (laptimer.Lap, float64) {
+func (ta *TrackAddict) lapTimerLap(l *trackaddict.Lap, vehicle string, id int) laptimer.Lap {
 	lap := laptimer.Lap{
-		ID:      l.Number,
-		LapTime: laptimer.Duration(l.Duration),
-		Vehicle: vehicle,
-		Track:   ta.track,
-		Tags:    ta.tags,
-		Note:    ta.note,
+		ID:               l.Number,
+		LapTime:          laptimer.Duration(l.Duration),
+		Vehicle:          vehicle,
+		Track:            ta.track,
+		Tags:             ta.tags,
+		Note:             ta.note,
+		LapRecordingType: laptimer.LapRecordingTriggered,
 	}
 
 	if len(l.Records) == 0 {
-		return lap, 0
+		return lap
 	}
 
 	var dist, d float64
@@ -185,6 +184,7 @@ func (ta *TrackAddict) lapTimerLap(l *trackaddict.Lap, vehicle string, id int) (
 		t := time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
 		ta.dateAdjust = ta.startDate.Sub(t)
 	}
+
 	lap.Date = laptimer.LapDate(r.Time.Add(ta.dateAdjust))
 
 	for j, r := range l.Records {
@@ -210,7 +210,9 @@ func (ta *TrackAddict) lapTimerLap(l *trackaddict.Lap, vehicle string, id int) (
 		id++
 	}
 
-	return lap, dist
+	lap.OverallDistance = round1dp(dist)
+
+	return lap
 }
 
 // lapTimerFix returns a laptimer.Fix representation of the data in r.
