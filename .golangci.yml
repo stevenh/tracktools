@@ -55,6 +55,7 @@ linters:
     - forbidigo
     - exhaustruct
     - nonamedreturns
+    - tagliatelle
 
 issues:
   exclude-use-default: false
