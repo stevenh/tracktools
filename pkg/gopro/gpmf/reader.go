@@ -6,7 +6,7 @@ import (
 	"io"
 )
 
-// Reader
+// Reader is a gpmf reader.
 type Reader struct {
 	want       map[string]struct{}
 	devices    int
@@ -14,6 +14,7 @@ type Reader struct {
 	deviceName string
 }
 
+// NewReader returns a new Reader.
 func NewReader() *Reader {
 	return &Reader{}
 }
@@ -65,15 +66,4 @@ func (re *Reader) read(r io.Reader, parent *Element) error {
 			return err
 		}
 	}
-}
-
-// Parse parses e.
-// https://github.com/gopro/gpmf-parser#fourcc
-func (re *Reader) Parse(e *Element) error {
-	switch string(e.Header.Key[:]) {
-	case "DEVC":
-		// Unique device source for metadata.
-	}
-
-	return nil
 }

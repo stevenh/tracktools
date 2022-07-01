@@ -285,7 +285,7 @@ func (e *Element) formatInt8s() error {
 
 func (e *Element) formatUint8s() error {
 	if e.Header.Count == 1 {
-		e.Data = uint8(e.raw[0]) // noline: unconvert
+		e.Data = uint8(e.raw[0]) // nolint: unconvert
 		return nil
 	}
 

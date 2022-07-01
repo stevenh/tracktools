@@ -18,9 +18,11 @@ const (
 	handlerName = "GoPro MET"
 )
 
+// Decoder is a GoPro mp4 metadata decoder.
 type Decoder struct {
 }
 
+// Decode decodes metadata from the mp4 stream in rs.
 func (d *Decoder) Decode(rs io.ReadSeeker) error {
 	line := geodesic.WGS84.DirectLine(50.857950, -0.752633, 173, 100, 0)
 	fmt.Println("line:", line)

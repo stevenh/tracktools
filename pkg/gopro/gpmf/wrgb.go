@@ -1,5 +1,6 @@
 package gpmf
 
+// WhiteBalanceRGB represents a white balance with RGB channels.
 type WhiteBalanceRGB struct {
 	Red   float64
 	Green float64

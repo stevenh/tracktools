@@ -9,9 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type mp4Reader struct {
-}
-
 func TestDecoder(t *testing.T) {
 	tests := []struct {
 		name   string

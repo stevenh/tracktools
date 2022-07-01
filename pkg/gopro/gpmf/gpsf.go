@@ -7,7 +7,7 @@ import (
 type gpsFix uint32
 
 const (
-	gpsFixNoLock = iota
+	gpsFixNoLock gpsFix = iota
 	_
 	gpsFix2DLock
 	gpsFix3DLock
@@ -19,7 +19,7 @@ func parseGPSFix(e *Element) error {
 		return fmt.Errorf("gps fix: unexpected data type %T (expected uint32)", e.Data)
 	}
 
-	switch v {
+	switch gpsFix(v) {
 	case gpsFixNoLock:
 		e.Data = "no lock"
 	case gpsFix2DLock:

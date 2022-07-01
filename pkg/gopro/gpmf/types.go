@@ -69,6 +69,6 @@ const (
 	// '#'<new size/rpt> <type><size><rpt> <compressed data ...>.
 	Compressed Type = '#'
 
-	// Nested nested metadata
+	// Nested nested metadata.
 	Nested Type = 0
 )
