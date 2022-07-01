@@ -3,7 +3,8 @@
 // It is a [Go] port of the gnomonic routines from [GeographicLib] and supporting helpers.
 //
 // The projection is derived in Section 8 of
-// - C. F. F. Karney, [Algorithms for geodesics], J. Geodesy 87, 43–55 (2013); DOI: [10.1007/s00190-012-0578-z]; [addenda].
+// - C. F. F. Karney, [Algorithms for geodesics], J. Geodesy 87, 43–55 (2013);
+//    DOI: [10.1007/s00190-012-0578-z]; [addenda].
 //
 // The projection of P is defined as follows: compute the geodesic line from C to P;
 // compute the reduced length m12, geodesic scale M12, and ρ = m12/M12; finally x = ρ sin azi1;

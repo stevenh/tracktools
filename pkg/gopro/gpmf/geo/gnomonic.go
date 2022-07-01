@@ -1,6 +1,7 @@
 package geo
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/tidwall/geodesic"
@@ -103,7 +104,7 @@ func (g *Gnomonic) Reverse(lat0, lon0, x, y float64) (lat, lon, azi, rk float64)
 	azi0 := atan2d(x, y)
 	rho := math.Hypot(x, y)
 	s := g.radius * math.Atan(rho/g.radius)
-	little := rho <= g.radius
+	little := rho <= g.radius // nolint: ifshort
 
 	if !little {
 		rho = 1 / rho
@@ -145,4 +146,91 @@ func (g *Gnomonic) Reverse(lat0, lon0, x, y float64) (lat, lon, azi, rk float64)
 	}
 
 	return lat, lon, azi, rk
+}
+
+// IntersectExt returns the intersection of lines A and B defined
+// by their end points as latitudes in the range [−90°, 90°] and
+// longitudes in degrees if they are extended.
+//   Line A: point 1 (lat1a, lon1a) -> point 2 (lat2a, lon2a)
+//   Line B: point 1 (lat1b, lon1b) -> point 2 (lat2b, lon2b)
+//
+// It returns the latitude, longitide of intersection point and
+// the azimuths:
+// azia1: azimuth from line A point 1 to intersection point.
+// azia2: azimuth from line A point 2 to intersection point.
+// azib1: azimuth from line B point 1 to intersection point.
+// azib1: azimuth from line B point 2 to intersection point.
+func (g *Gnomonic) IntersectExt(
+	lat1a, lon1a,
+	lat2a, lon2a,
+	lat1b, lon1b,
+	lat2b, lon2b float64,
+) (lat, lon, azia1, azia2, azib1, azib2 float64) {
+	lat = (lat1a + lat2a + lat1b + lat2b) / 4
+	// Possibly need to deal with longitudes wrapping around.
+	lon = (lon1a + lon2a + lon1b + lon2b) / 4
+	for i := 0; i < numIterations; i++ {
+		xa1, ya1, _, _ := g.Forward(lat, lon, lat1a, lon1a)
+		xa2, ya2, _, _ := g.Forward(lat, lon, lat2a, lon2a)
+		xb1, yb1, _, _ := g.Forward(lat, lon, lat1b, lon1b)
+		xb2, yb2, _, _ := g.Forward(lat, lon, lat2b, lon2b)
+		// See Hartley and Zisserman, Multiple View Geometry, Sec. 2.2.1
+		va1 := newVector2(xa1, ya1)
+		va2 := newVector2(xa2, ya2)
+		vb1 := newVector2(xb1, yb1)
+		vb2 := newVector2(xb2, yb2)
+		// la is homogeneous representation of line A1,A2.
+		// lb is homogeneous representation of line B1,B2.
+		la := va1.cross(va2)
+		lb := vb1.cross(vb2)
+		// p0 is homogeneous representation of intersection of la and lb.
+		p0 := la.cross(lb)
+		p0.norm()
+
+		lat0, lon0, _, _ := g.Reverse(lat, lon, p0.x, p0.y)
+		if lat0 == lat && lon0 == lon {
+			// No change so stop early.
+			break
+		}
+		lat, lon = lat0, lon0
+	}
+
+	g.earth.Inverse(lat1a, lon1a, lat, lon, nil, nil, &azia2)
+	g.earth.Inverse(lat, lon, lat2a, lon2a, nil, &azia1, nil)
+
+	g.earth.Inverse(lat1b, lon1b, lat, lon, nil, nil, &azib2)
+	g.earth.Inverse(lat, lon, lat2b, lon2b, nil, &azib1, nil)
+
+	return lat, lon, azia1, azia2, azib1, azib2
+}
+
+// Intersect returns the intersection latitude and longitude
+// of lines A and B defined by their end points as latitudes in
+// the range [−90°, 90°] and longitudes in degrees.
+//   Line A: point 1 (lat1a, lon1a) -> point 2 (lat2a, lon2a)
+//   Line B: point 1 (lat1b, lon1b) -> point 2 (lat2b, lon2b)
+func (g *Gnomonic) Intersect(
+	lat1a, lon1a,
+	lat2a, lon2a,
+	lat1b, lon1b,
+	lat2b, lon2b float64,
+) (lat, lon float64, err error) {
+	lat, lon, azia1, azia2, azib1, azib2 := g.IntersectExt(
+		lat1a, lon1a,
+		lat2a, lon2a,
+		lat1b, lon1b,
+		lat2b, lon2b,
+	)
+
+	if math.Signbit(azia1) == math.Signbit(azia2) ||
+		math.Signbit(azib1) == math.Signbit(azib2) {
+		return 0, 0, fmt.Errorf("line a %f, %f -> %f, %f doesn't intersect with line b %f, %f -> %f, %f",
+			lat1a, lon1a,
+			lat2a, lon2a,
+			lat1b, lon1b,
+			lat2b, lon2b,
+		)
+	}
+
+	return lat, lon, nil
 }

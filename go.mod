@@ -3,6 +3,7 @@ module github.com/stevenh/tracktools
 go 1.18
 
 require (
+	github.com/edgeware/mp4ff v0.29.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/pulselive/gopro-utils v0.0.0-20210920140750-995e777d27d9
@@ -19,7 +20,6 @@ require (
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/edgeware/mp4ff v0.29.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
