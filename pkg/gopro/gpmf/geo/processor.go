@@ -146,5 +146,9 @@ func (p *Processor) DistanceToLine(pointLat, pointLon, startLat, startLon, endLa
 // Distance returns the distance on a sphere between
 // two points expressed as Latitude, Longitude in degrees.
 func (p *Processor) Distance(lat1, lon1, lat2, lon2 float64) float64 {
-	return p.distFunc(lat1, lon1, lat2, lon2, p.radius)
+	return p.distFunc(
+		lat1*radians, lon1*radians,
+		lat2*radians, lon2*radians,
+		p.radius,
+	)
 }
