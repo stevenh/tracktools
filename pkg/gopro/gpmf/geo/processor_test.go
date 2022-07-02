@@ -44,8 +44,8 @@ func TestProcessorOnLine(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			m := NewProcessor(Tolerance(tc.tol))
-			on := m.OnLine(
+			p := NewProcessor(Tolerance(tc.tol))
+			on := p.OnLine(
 				tc.lat0, tc.lon0,
 				tc.lat1, tc.lon1,
 				tc.lat2, tc.lon2,
@@ -54,7 +54,6 @@ func TestProcessorOnLine(t *testing.T) {
 		})
 	}
 }
-
 func TestProcessorDistanceToLine(t *testing.T) {
 	tests := []struct {
 		name string
@@ -81,20 +80,63 @@ func TestProcessorDistanceToLine(t *testing.T) {
 		},
 	}
 
-	m := NewProcessor()
+	p := NewProcessor()
 	radius := geodesic.WGS84.Radius()
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			e := distanceEquirect(tc.pLat, tc.pLon, tc.sLat, tc.sLon, radius)
+			e := distanceEquirect(
+				tc.pLat, tc.pLon,
+				tc.sLat, tc.sLon,
+				radius,
+			)
 			fmt.Printf("est1: %.9f\n", e)
 
-			e = distanceHaversin(tc.pLat*radians, tc.pLon*radians, tc.sLat*radians, tc.sLon*radians, radius)
+			e = distanceHaversin(
+				tc.pLat*radians, tc.pLon*radians,
+				tc.sLat*radians, tc.sLon*radians,
+				radius,
+			)
 			fmt.Printf("est2: %.9f\n", e)
 
-			d := m.DistanceToLine(
+			d := p.DistanceToLine(
 				tc.pLat, tc.pLon,
 				tc.sLat, tc.sLon,
 				tc.eLat, tc.eLon,
+			)
+			floatEqual(t, tc.expected, d, 3)
+		})
+	}
+}
+
+func TestProcessorDistance(t *testing.T) {
+	tests := []struct {
+		name string
+		lat1, lon1,
+		lat2, lon2,
+		expected float64
+		options []Option
+	}{
+		{
+			name: "default-25m",
+			lat1: 50.857933, lon1: -0.752594,
+			lat2: 50.8581562, lon2: -0.7525977,
+			expected: 24.848,
+		},
+		{
+			name: "fast-25m",
+			lat1: 50.857933, lon1: -0.752594,
+			lat2: 50.8581562, lon2: -0.7525977,
+			expected: 24.848,
+			options:  []Option{FastDistance()},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			p := NewProcessor(tc.options...)
+			d := p.Distance(
+				tc.lat1, tc.lon1,
+				tc.lat2, tc.lon2,
 			)
 			floatEqual(t, tc.expected, d, 3)
 		})

@@ -25,6 +25,16 @@ func Tolerance(val float64) Option {
 	}
 }
 
+// FastDistance sets the distance processing function to
+// a Equirectangular function which is typically 5x faster
+// than the default Haversine function with limited impact
+// on accuracy for smaller distances.
+func FastDistance() Option {
+	return func(p *Processor) {
+		p.distFunc = distanceEquirect
+	}
+}
+
 // Processor represents a geographic processor.
 type Processor struct {
 	// radius is the radius used for spherical calculations.
