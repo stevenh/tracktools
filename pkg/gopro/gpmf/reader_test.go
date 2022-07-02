@@ -1,7 +1,6 @@
 package gpmf
 
 import (
-	"encoding/json"
 	"io"
 	"os"
 	"testing"
@@ -79,15 +78,8 @@ func TestReader(t *testing.T) {
 
 			data, err := reader.Read(r)
 			require.NoError(t, err)
-
-			d := struct {
-				Data []*Element
-			}{Data: data}
-
-			enc := json.NewEncoder(os.Stdout)
-			enc.SetIndent("", "  ")
-			err = enc.Encode(d)
-			require.NoError(t, err)
+			require.Len(t, data, 1)
+			// TODO(steve): move valiation
 		})
 	}
 }
