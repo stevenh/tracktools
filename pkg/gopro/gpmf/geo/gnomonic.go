@@ -50,8 +50,8 @@ func NewGnomonic(e *geodesic.Ellipsoid) *Gnomonic {
 // lon	longitude of point in degrees.
 //
 // It returns:
-// x	easting of point in meters.
-// y	northing of point in meters.
+// x	easting of point.
+// y	northing of point.
 // azi	azimuth of geodesic at point in degrees.
 // rk	reciprocal of azimuthal scale at point.
 //
@@ -85,8 +85,8 @@ func (g *Gnomonic) Forward(lat0, lon0, lat, lon float64) (x, y, azi, rk float64)
 // Reverse projection, from gnomonic to geographic.
 // lat0	latitude of center point of projection in the range [−90°, 90°] (degrees).
 // lon0	longitude of center point of projection (degrees).
-// x	easting of point (meters).
-// y	northing of point (meters).
+// x	easting of point.
+// y	northing of point.
 //
 // Returns:
 // lat	latitude of point in the range [−90°, 90°] (degrees).

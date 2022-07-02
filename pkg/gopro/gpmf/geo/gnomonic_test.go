@@ -41,16 +41,16 @@ func TestIntersect(t *testing.T) {
 				tc.latb2, tc.lonb2,
 			)
 			t.Logf("Result %f, %f\n", lat, lon)
-			floatEqual(t, tc.expectedLat, lat)
-			floatEqual(t, tc.expectedLon, lon)
+			floatEqual(t, tc.expectedLat, lat, 6)
+			floatEqual(t, tc.expectedLon, lon, 6)
 
 			t.Logf("Azimuths on line A %f, %f\n", azi2a, azi1a)
-			floatEqual(t, tc.expectedAzi1a, azi1a)
-			floatEqual(t, tc.expectedAzi2a, azi2a)
+			floatEqual(t, tc.expectedAzi1a, azi1a, 6)
+			floatEqual(t, tc.expectedAzi2a, azi2a, 6)
 
 			t.Logf("Azimuths on line B %f, %f\n", azi2b, azi1b)
-			floatEqual(t, tc.expectedAzi1b, azi1b)
-			floatEqual(t, tc.expectedAzi2b, azi2b)
+			floatEqual(t, tc.expectedAzi1b, azi1b, 6)
+			floatEqual(t, tc.expectedAzi2b, azi2b, 6)
 		})
 	}
 }
@@ -69,11 +69,13 @@ func TestLines(t *testing.T) {
 	t.Logf("Azimuths on line B %f, %f\n", azi2b, azi1b)
 
 	var lat2, lon2, azi2 float64
-	g.Direct(
-		50.857928, -0.752664, 83, 10,
-		&lat2, &lon2, &azi2,
-	)
-	t.Logf("Result %f, %f azi: %f\n", lat2, lon2, azi2)
+	for _, d := range []float64{5, 10} {
+		g.Direct(
+			50.857928, -0.752664, 83, d,
+			&lat2, &lon2, &azi2,
+		)
+		t.Logf("Result %f, %f azi: %f\n", lat2, lon2, azi2)
+	}
 
 	g.Direct(
 		50.858006, -0.752614, 173, 20,
@@ -82,10 +84,16 @@ func TestLines(t *testing.T) {
 	t.Logf("Result %f, %f azi: %f\n", lat2, lon2, azi2)
 }
 
-// floatEqual checks two floats to 6dp.
-func floatEqual(t *testing.T, expected, val float64) {
+type testingT interface {
+	require.TestingT
+	Helper()
+}
+
+// floatEqual checks two floats to a given db.
+func floatEqual(t testingT, expected, val float64, dp int) {
 	t.Helper()
-	e := fmt.Sprintf("%.6f", expected)
-	v := fmt.Sprintf("%.6f", val)
+	format := fmt.Sprintf("%%.%df", dp)
+	e := fmt.Sprintf(format, expected)
+	v := fmt.Sprintf(format, val)
 	require.Equal(t, e, v)
 }
