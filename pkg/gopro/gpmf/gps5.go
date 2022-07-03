@@ -1,5 +1,10 @@
 package gpmf
 
+import (
+	"fmt"
+	"time"
+)
+
 // GPS represents GPS5 data.
 type GPS struct {
 	Latitude  float64
@@ -7,6 +12,18 @@ type GPS struct {
 	Altitude  float64
 	Speed     float64
 	Speed3D   float64
+	Offset    time.Duration
+}
+
+func (g GPS) String() string {
+	return fmt.Sprintf("pos: %.7f,%.7f, alt: %.2f, speed: %.2f, speed3d: %.2f off: %s",
+		g.Latitude,
+		g.Longitude,
+		g.Altitude,
+		g.Speed,
+		g.Speed3D,
+		g.Offset,
+	)
 }
 
 func parseGPS(e *Element) error {

@@ -22,6 +22,7 @@ type Decoder struct {
 	reader *Reader
 }
 
+// NewDecoder returns a new Decoder.
 func NewDecoder() *Decoder {
 	return &Decoder{
 		reader: NewReader(),
@@ -29,10 +30,10 @@ func NewDecoder() *Decoder {
 }
 
 // Decode decodes metadata from the mp4 stream in rs.
-func (d *Decoder) Decode(rs io.ReadSeeker) error {
+func (d *Decoder) Decode(rs io.ReadSeeker) ([]*Element, error) {
 	f, err := mp4.DecodeFile(rs)
 	if err != nil {
-		return fmt.Errorf("decode: mp4 %w", err)
+		return nil, fmt.Errorf("decode: mp4 %w", err)
 	}
 
 	for i, trak := range f.Moov.Traks {
@@ -44,13 +45,16 @@ func (d *Decoder) Decode(rs io.ReadSeeker) error {
 
 		stbl := trak.Mdia.Minf.Stbl
 
-		timeUnits := time.Second / time.Duration(trak.Mdia.Mdhd.Timescale)
-		if err := d.decodeTrak(rs, stbl, timeUnits); err != nil {
-			return fmt.Errorf("decode: trak %d: %w", i, err)
+		units := time.Second / time.Duration(trak.Mdia.Mdhd.Timescale)
+		data, err := d.decodeTrak(rs, stbl, units)
+		if err != nil {
+			return nil, fmt.Errorf("decode: trak %d: %w", i, err)
 		}
+
+		return data, nil
 	}
 
-	return nil
+	return nil, fmt.Errorf("no metadata %q trak found", handlerName)
 }
 
 // chunkOffsets returns the chunk offsets for stbl.
@@ -70,27 +74,37 @@ func (d *Decoder) chunkOffsets(stbl *mp4.StblBox) ([]uint64, error) {
 	}
 }
 
-func (d *Decoder) readChunk(rs io.ReadSeeker, offset, size int64, startDec, endDec uint64, timeUnits time.Duration) error {
+func (d *Decoder) readChunk(rs io.ReadSeeker,
+	offset, size int64,
+	startDec, endDec uint64,
+	units time.Duration,
+) ([]*Element, error) {
 	if _, err := rs.Seek(offset, io.SeekStart); err != nil {
-		return fmt.Errorf("seek: %w", err)
+		return nil, fmt.Errorf("seek: %w", err)
 	}
 
 	data, err := d.reader.Read(io.LimitReader(rs, size))
 	if err != nil {
-		return fmt.Errorf("read: %w", err)
+		return nil, fmt.Errorf("read: %w", err)
 	}
 
 	// TODO(steve): remove
-	d.dumpStats(data, startDec, endDec, timeUnits)
-	//return dump(data)
-	return nil
+	d.dumpStats(data, startDec, endDec, units)
+	return data, nil
+
+	if err := dump(data); err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 // TODO(steve): remove
-func (d *Decoder) dumpStats(data []*Element, startDec, endDec uint64, timeUnits time.Duration) {
-	start := time.Duration(startDec) * timeUnits
-	end := time.Duration(endDec) * timeUnits
-	dur := float64(end-start) / float64(time.Second)
+func (d *Decoder) dumpStats(data []*Element, startDec, endDec uint64, units time.Duration) {
+	start := time.Duration(startDec) * units
+	end := time.Duration(endDec) * units
+	dur := end - start
+
 	fmt.Println("chunk start:", start, "end:", end, "dur:", dur)
 
 	p := geo.NewProcessor()
@@ -111,9 +125,16 @@ func (d *Decoder) dumpStats(data []*Element, startDec, endDec uint64, timeUnits 
 				if t.Kind() == reflect.Slice {
 					counts[e.Header.FourCC()] += v.Len()
 					if s, ok := e.Data.([]GPS); ok {
-						for _, v := range s {
+						fmt.Println("fix:", e.Metadata["gps_fix_description"])
+						fmt.Println("dop:", e.Metadata["gps_dilution_of_precision"])
+						inc := dur / time.Duration(len(s))
+						offset := start
+						for i, v := range s {
 							d := p.Distance(50.857933, -0.752594, v.Latitude, v.Longitude)
-							fmt.Printf("distance: %.2f pos: %.7f,%.7f\n", d, v.Latitude, v.Longitude)
+							fmt.Printf("distance: %.2f pos: %.7f,%.7f speed: %.2f off: %s\n", d, v.Latitude, v.Longitude, v.Speed, offset)
+							v.Offset = offset
+							offset += inc
+							s[i] = v
 						}
 					}
 				}
@@ -122,15 +143,16 @@ func (d *Decoder) dumpStats(data []*Element, startDec, endDec uint64, timeUnits 
 	}
 
 	// Output how many of each FourCC we have and how long they represent.
+	durSec := float64(dur) / float64(time.Second)
 	for k, v := range counts {
-		fmt.Println(k, "=", v, float64(v)/dur)
+		fmt.Println(k, "=", v, float64(v)/durSec)
 	}
 }
 
-func (d *Decoder) decodeTrak(rs io.ReadSeeker, stbl *mp4.StblBox, timeUnits time.Duration) error {
+func (d *Decoder) decodeTrak(rs io.ReadSeeker, stbl *mp4.StblBox, units time.Duration) ([]*Element, error) {
 	chunkOffsets, err := d.chunkOffsets(stbl)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Chunks contain one or more contiguous samples.
@@ -152,6 +174,7 @@ func (d *Decoder) decodeTrak(rs io.ReadSeeker, stbl *mp4.StblBox, timeUnits time
 		firstSampleInChunk uint32 = 1
 	)
 
+	var data []*Element
 	timeNext := stts.SampleCount[timeIdx]
 	dur := stts.SampleTimeDelta[timeIdx]
 	for i := 0; i < entries; i++ {
@@ -180,10 +203,12 @@ func (d *Decoder) decodeTrak(rs io.ReadSeeker, stbl *mp4.StblBox, timeUnits time
 				chunkSize += int64(size)
 			}
 
-			if err := d.readChunk(rs, int64(offset), chunkSize, start, dec, timeUnits); err != nil {
-				return err
+			cd, err := d.readChunk(rs, int64(offset), chunkSize, start, dec, units)
+			if err != nil {
+				return nil, err
 			}
 
+			data = append(data, cd...)
 			if lastSampleNr < firstSampleInChunk {
 				break
 			}
@@ -196,5 +221,5 @@ func (d *Decoder) decodeTrak(rs io.ReadSeeker, stbl *mp4.StblBox, timeUnits time
 		}
 	}
 
-	return nil
+	return data, nil
 }

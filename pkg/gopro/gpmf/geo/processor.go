@@ -10,7 +10,7 @@ const (
 type Option func(*Processor)
 
 // Radius sets the radius of the ellipsoid.
-// Default: 6378137
+// Default: 6378137 (the radius of the earth).
 func Radius(val float64) Option {
 	return func(p *Processor) {
 		p.radius = val

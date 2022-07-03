@@ -1,7 +1,6 @@
 package gpmf
 
 import (
-	"encoding/json"
 	"io"
 	"os"
 	"testing"
@@ -69,7 +68,6 @@ func TestDecoder(t *testing.T) {
 		},
 	}
 
-	reader := NewReader()
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			r := tc.reader(t)
@@ -78,27 +76,10 @@ func TestDecoder(t *testing.T) {
 			}
 
 			dec := &Decoder{}
-			err := dec.Decode(r)
+			_, err := dec.Decode(r)
 			require.NoError(t, err)
 
-			return
-
-			_, err = r.Seek(int64(381620), io.SeekStart)
-			require.NoError(t, err)
-			//4568 dur: 1001 offset: 381620
-
-			data, err := reader.Read(io.LimitReader(r, 4568))
-			//data, err := reader.Read(r)
-			require.NoError(t, err)
-
-			d := struct {
-				Data []*Element
-			}{Data: data}
-
-			enc := json.NewEncoder(os.Stdout)
-			enc.SetIndent("", "  ")
-			err = enc.Encode(d)
-			require.NoError(t, err)
+			// TODO(steve): validate data.
 		})
 	}
 }

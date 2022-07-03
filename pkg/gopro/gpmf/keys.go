@@ -1,6 +1,8 @@
 package gpmf
 
 // Known keys.
+// Additional information can be found here:
+// https://exiftool.org/TagNames/GoPro.html
 var (
 	// KeyDevice unique device source for metadata.
 	KeyDevice = "DEVC"
@@ -242,7 +244,7 @@ var (
 		KeyGyro:              "gyroscope",
 		KeyGPS:               "gps",
 		KeyGPSTime:           "gps_time",
-		KeyGPSFix:            "gps_fix_type",
+		KeyGPSFix:            "gps_fix",
 		KeyGSPDoP:            "gps_dilution_of_precision",
 		KeyMagnetometer:      "magnetometer",
 		KeyFace:              "face_detection",

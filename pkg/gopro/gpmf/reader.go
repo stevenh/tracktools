@@ -37,6 +37,7 @@ func (re *Reader) Read(r io.Reader) ([]*Element, error) {
 	return e.Nested, nil
 }
 
+// read reads data from r into parent.
 func (re *Reader) read(r io.Reader, parent *Element) error {
 	for {
 		e := NewElement(parent)
