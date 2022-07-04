@@ -4,12 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"reflect"
 	"strings"
 	"time"
 
 	"github.com/edgeware/mp4ff/mp4"
-	"github.com/stevenh/tracktools/pkg/gopro/gpmf/geo"
 )
 
 const (
@@ -74,6 +72,7 @@ func (d *Decoder) chunkOffsets(stbl *mp4.StblBox) ([]uint64, error) {
 	}
 }
 
+// readChunk reads a single chunk from rs and amends it with offset information.
 func (d *Decoder) readChunk(rs io.ReadSeeker,
 	offset, size int64,
 	startDec, endDec uint64,
@@ -88,67 +87,36 @@ func (d *Decoder) readChunk(rs io.ReadSeeker,
 		return nil, fmt.Errorf("read: %w", err)
 	}
 
-	// TODO(steve): remove
-	d.dumpStats(data, startDec, endDec, units)
-	return data, nil
-
-	if err := dump(data); err != nil {
-		return nil, err
+	if err := Walk(data, newOffsetWalker(startDec, endDec, units).walk); err != nil {
+		return nil, fmt.Errorf("offsets: %w", err)
 	}
 
 	return data, nil
 }
 
-// TODO(steve): remove
-func (d *Decoder) dumpStats(data []*Element, startDec, endDec uint64, units time.Duration) {
-	start := time.Duration(startDec) * units
-	end := time.Duration(endDec) * units
-	dur := end - start
+// offsetWalker traverses Elements and sets their time offset.
+type offsetWalker struct {
+	start, end time.Duration
+}
 
-	fmt.Println("chunk start:", start, "end:", end, "dur:", dur)
-
-	p := geo.NewProcessor()
-
-	counts := make(map[string]int)
-	for _, e := range data {
-		counts[e.Header.FourCC()]++
-		for _, e := range e.Nested {
-
-			key := e.Header.FourCC()
-			counts[key]++
-			for _, e := range e.Nested {
-				if e.Data == nil {
-					continue
-				}
-				v := reflect.ValueOf(e.Data)
-				t := v.Type()
-				if t.Kind() == reflect.Slice {
-					counts[e.Header.FourCC()] += v.Len()
-					if s, ok := e.Data.([]GPS); ok {
-						fmt.Println("fix:", e.Metadata["gps_fix_description"])
-						fmt.Println("dop:", e.Metadata["gps_dilution_of_precision"])
-						inc := dur / time.Duration(len(s))
-						offset := start
-						for i, v := range s {
-							d := p.Distance(50.857933, -0.752594, v.Latitude, v.Longitude)
-							fmt.Printf("distance: %.2f pos: %.7f,%.7f speed: %.2f off: %s\n", d, v.Latitude, v.Longitude, v.Speed, offset)
-							v.Offset = offset
-							offset += inc
-							s[i] = v
-						}
-					}
-				}
-			}
-		}
-	}
-
-	// Output how many of each FourCC we have and how long they represent.
-	durSec := float64(dur) / float64(time.Second)
-	for k, v := range counts {
-		fmt.Println(k, "=", v, float64(v)/durSec)
+// newOffsetWalker creates a new offsetWalker.
+func newOffsetWalker(start, end uint64, units time.Duration) *offsetWalker {
+	return &offsetWalker{
+		start: time.Duration(start) * units,
+		end:   time.Duration(end) * units,
 	}
 }
 
+// walk is WalkFunc which sets offsets.
+func (o *offsetWalker) walk(e *Element) error {
+	if v, ok := e.Data.(offseter); ok {
+		v.offsets(o.start, o.end)
+	}
+
+	return nil
+}
+
+// decodeTrak decodes all chunks from single tracks data as detailed in stbl from rs.
 func (d *Decoder) decodeTrak(rs io.ReadSeeker, stbl *mp4.StblBox, units time.Duration) ([]*Element, error) {
 	chunkOffsets, err := d.chunkOffsets(stbl)
 	if err != nil {

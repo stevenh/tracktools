@@ -4,12 +4,17 @@ import (
 	"fmt"
 )
 
+// GPSFix represents the type of a GPS fix.
 type GPSFix uint32
 
 const (
+	// GPSNoLock represents a GPS fix which has no satellite lock.
 	GPSNoLock GPSFix = iota
 	_
+	// GPS2DLock represents a GPS fix which only has a 2D lock.
 	GPS2DLock
+
+	// GPS3DLock represents a GPS fix which only has a 3D lock.
 	GPS3DLock
 )
 

@@ -54,7 +54,8 @@ func toFloatSliceSingle[N number](data N) []float64 {
 	return Scale([]float64{float64(data)})
 }
 
-func floatSlice(data any) ([]float64, error) {
+// floatSlice converts data to a []float64.
+func floatSlice(data any) ([]float64, error) { // nolint: gocyclo,cyclop
 	switch v := data.(type) {
 	case []int8:
 		return toFloatSlice(v), nil
@@ -108,27 +109,4 @@ func floatSlice(data any) ([]float64, error) {
 	default:
 		return nil, fmt.Errorf("element: to scale invalid element type %T", v)
 	}
-}
-
-// floatType returns a slice of T created using f.
-func floatType[T any](e *Element, size int, f func([]float64) T) error {
-	vals, err := floatSlice(e.Data)
-	if err != nil {
-		return err
-	}
-
-	var t T
-	if len(vals)%size != 0 {
-		return fmt.Errorf("parse %T: invalid number of elements %d (not a multiple of %d)", t, len(vals), size)
-	}
-
-	d := make([]T, len(vals)/size)
-	for i := range d {
-		d[i] = f(vals[0:size])
-		vals = vals[size:]
-	}
-
-	e.Data = d
-
-	return nil
 }

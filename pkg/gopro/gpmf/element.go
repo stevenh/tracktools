@@ -241,10 +241,11 @@ func (e *Element) formatBasic(parent *Element) error { // nolint: cyclop
 		return e.formatInt32_32s()
 	case Date:
 		return e.formatDates()
-	case Complex, Compressed:
-		// TODO(steve): support
+	case Complex:
+		// TODO(steve): support fully.
 		return nil
-		//return fmt.Errorf("element: type %s not supported", e.Header.Type)
+	case Compressed:
+		return fmt.Errorf("element: type %s not supported", e.Header.Type)
 	case Nested:
 		// Nested doesn't have raw data.
 		return nil
@@ -526,4 +527,10 @@ func (e *Element) formatDates() error {
 
 func (e *Element) friendlyName() string {
 	return friendlyName(e.Header.FourCC())
+}
+
+// MetadataByKey returns the elements metadata for key.
+func (e *Element) MetadataByKey(key string) (any, bool) {
+	v, ok := e.Metadata[keyNames[key]]
+	return v, ok
 }

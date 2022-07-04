@@ -5,6 +5,18 @@ import (
 	"time"
 )
 
+// GPSData represents GPS data.
+type GPSData []GPS
+
+// offsets implements offseter.
+func (d GPSData) offsets(start, end time.Duration) {
+	offsets(start, end, d, func(i int, val time.Duration) {
+		v := d[i]
+		v.Offset = val
+		d[i] = v
+	})
+}
+
 // GPS represents GPS5 data.
 type GPS struct {
 	Latitude  float64
@@ -28,7 +40,7 @@ func (g GPS) String() string {
 
 func parseGPS(e *Element) error {
 	e.metadata()
-	return floatType(e, 5, func(vals []float64) GPS {
+	return floatType[GPSData](e, 5, func(vals []float64) GPS {
 		return GPS{
 			Latitude:  vals[0],
 			Longitude: vals[1],
