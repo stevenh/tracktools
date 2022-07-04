@@ -3,13 +3,14 @@ module github.com/stevenh/tracktools
 go 1.18
 
 require (
+	github.com/edgeware/mp4ff v0.29.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.12.0
-	github.com/stretchr/testify v1.7.2
+	github.com/stretchr/testify v1.8.0
 	github.com/tidwall/geodesic v0.3.5
 	golang.org/x/text v0.3.7
 	gonum.org/v1/gonum v0.11.0
@@ -37,3 +38,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/tidwall/geodesic => github.com/stevenh/geodesic v0.3.6-0.20220704191314-6615b5611b07

@@ -55,6 +55,9 @@ linters:
     - forbidigo
     - exhaustruct
     - nonamedreturns
+    - tagliatelle
+    - gomoddirectives
+    - ifshort
 
 issues:
   exclude-use-default: false
