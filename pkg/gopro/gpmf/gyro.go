@@ -24,7 +24,7 @@ type Gyro struct {
 }
 
 func parseGyro(e *Element) error {
-	e.metadata()
+	e.initMetadata()
 	return floatType[GyroData](e, 3, func(vals []float64) Gyro {
 		return Gyro{
 			Z: vals[0],

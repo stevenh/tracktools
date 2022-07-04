@@ -18,7 +18,7 @@ type Face struct {
 }
 
 func parseFace(e *Element) error {
-	e.metadata()
+	e.initMetadata()
 	if e.Header.Count == 0 {
 		// Nothing to do.
 		return nil

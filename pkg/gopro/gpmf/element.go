@@ -35,7 +35,7 @@ var (
 
 // Element represents a klv element.
 type Element struct {
-	// Header is the header of the kle.
+	// Header is the header of the klv.
 	Header Header
 
 	// Total is the total data size including padding calculated by ReadHeader.
@@ -108,16 +108,14 @@ func (e *Element) MarshalJSON() ([]byte, error) {
 	v := &struct {
 		Level int
 		*Alias
-		Raw string `json:",omitempty"`
 	}{
 		Level: e.level,
 		Alias: (*Alias)(e),
-		//Raw:       hex.Dump(e.raw),
 	}
 	return json.Marshal(v)
 }
 
-// ReadHeader reads the header details from r and calculates Size and Padding.
+// ReadHeader reads the header details from r and calculates its sizing.
 func (e *Element) ReadHeader(r io.Reader) error {
 	if err := binary.Read(r, byteOrder, &e.Header); err != nil {
 		return fmt.Errorf("element: read header: %w", err)
@@ -164,8 +162,14 @@ func (e Element) String() string {
 	)
 }
 
-// metadata sets the metadata on e from its parents.
-func (e *Element) metadata() {
+// MetadataByKey returns the elements metadata for key.
+func (e *Element) MetadataByKey(key string) (any, bool) {
+	v, ok := e.Metadata[keyNames[key]]
+	return v, ok
+}
+
+// initMetadata sets the metadata on e from its parents.
+func (e *Element) initMetadata() {
 	e.Metadata = e.parent.Metadata
 	for v := e.parent; v.parent != nil; v = v.parent {
 		for k, v := range v.Metadata {
@@ -527,10 +531,4 @@ func (e *Element) formatDates() error {
 
 func (e *Element) friendlyName() string {
 	return friendlyName(e.Header.FourCC())
-}
-
-// MetadataByKey returns the elements metadata for key.
-func (e *Element) MetadataByKey(key string) (any, bool) {
-	v, ok := e.Metadata[keyNames[key]]
-	return v, ok
 }

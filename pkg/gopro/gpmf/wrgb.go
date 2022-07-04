@@ -25,7 +25,7 @@ type WhiteBalanceRGB struct {
 }
 
 func parseWhiteBalanceRGB(e *Element) error {
-	e.metadata()
+	e.initMetadata()
 	return floatType[WhiteBalanceRGBData](e, 3, func(vals []float64) WhiteBalanceRGB {
 		return WhiteBalanceRGB{
 			Red:   vals[0],

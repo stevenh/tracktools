@@ -8,10 +8,6 @@ import (
 
 // Reader is a gpmf reader.
 type Reader struct {
-	want       map[string]struct{}
-	devices    int
-	deviceID   string
-	deviceName string
 }
 
 // NewReader returns a new Reader.
@@ -22,10 +18,6 @@ func NewReader() *Reader {
 // Read reads and returns kvl Elements from v.
 func (re *Reader) Read(r io.Reader) ([]*Element, error) {
 	e := NewElement(nil)
-
-	// TODO(steve): remove this initialisation of e as
-	// it's just for debugging.
-	e.Header.Type = Nested
 	for i, v := range []byte(KeyStream) {
 		e.Header.Key[i] = v
 	}

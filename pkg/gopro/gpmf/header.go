@@ -52,34 +52,9 @@ func (h Header) Scalable() bool {
 	return false
 }
 
-// Sticky returns true if this metdata is sticky,
-// false otherwise.
-// https://github.com/gopro/gpmf-parser#sticky-metadata
-func (h Header) Sticky() bool {
-	switch h.FourCC() {
-	case KeyTypeDef, KeyStandardUnits, KeyScale,
-		KeyDeviceName, KeyDeviceID,
-		KeyStreamName:
-		return true
-	}
-
-	return false
-}
-
-// IsKey returns true if its Key matches key,
-// false otherwise.
-func (h Header) IsKey(key string) bool {
-	return h.FourCC() == key
-}
-
 // FourCC returns the Key as string.
 func (h Header) FourCC() string {
 	return string(h.Key[:])
-}
-
-// SizeInt returns the Size as an int.
-func (h Header) SizeInt() int {
-	return int(h.Size)
 }
 
 // MarshalJSON implements json.Marshaler.
@@ -100,12 +75,12 @@ func (h *Header) MarshalJSON() ([]byte, error) {
 func (h Header) validate() error {
 	for i, c := range h.Key[:] {
 		if c > unicode.MaxASCII {
-			return fmt.Errorf("kvl: invalid key[%d] = 0x%02x", i, c)
+			return fmt.Errorf("header: invalid key[%d] = 0x%02x", i, c)
 		}
 	}
 
 	if h.Type == Compressed {
-		return fmt.Errorf("kvl: key %q: compressed data not supported", h.FourCC())
+		return fmt.Errorf("header: key %q: compressed data not supported", h.FourCC())
 	}
 
 	return nil

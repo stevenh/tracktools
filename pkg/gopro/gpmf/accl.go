@@ -25,7 +25,7 @@ func (d AccelData) offsets(start, end time.Duration) {
 }
 
 func parseAccel(e *Element) error {
-	e.metadata()
+	e.initMetadata()
 	return floatType[AccelData](e, 3, func(vals []float64) Accel {
 		return Accel{
 			Z: vals[0],

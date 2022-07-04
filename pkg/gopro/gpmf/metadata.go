@@ -7,7 +7,7 @@ func parseMetadata(e *Element) error {
 }
 
 func parseHasMetadata(e *Element) error {
-	e.metadata()
+	e.initMetadata()
 
 	return nil
 }

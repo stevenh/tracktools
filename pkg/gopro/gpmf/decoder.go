@@ -36,15 +36,15 @@ func (d *Decoder) Decode(rs io.ReadSeeker) ([]*Element, error) {
 
 	for i, trak := range f.Moov.Traks {
 		if trak.Mdia.Hdlr.HandlerType != handlerType {
+			// Not our handler type.
 			continue
 		} else if !strings.Contains(trak.Mdia.Hdlr.Name, handlerName) {
+			// Not our handler name.
 			continue
 		}
 
-		stbl := trak.Mdia.Minf.Stbl
-
 		units := time.Second / time.Duration(trak.Mdia.Mdhd.Timescale)
-		data, err := d.decodeTrak(rs, stbl, units)
+		data, err := d.decodeTrak(rs, trak.Mdia.Minf.Stbl, units)
 		if err != nil {
 			return nil, fmt.Errorf("decode: trak %d: %w", i, err)
 		}
@@ -52,7 +52,7 @@ func (d *Decoder) Decode(rs io.ReadSeeker) ([]*Element, error) {
 		return data, nil
 	}
 
-	return nil, fmt.Errorf("no metadata %q trak found", handlerName)
+	return nil, fmt.Errorf("decode: no metadata for %q found", handlerName)
 }
 
 // chunkOffsets returns the chunk offsets for stbl.

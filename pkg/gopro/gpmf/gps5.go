@@ -39,7 +39,7 @@ func (g GPS) String() string {
 }
 
 func parseGPS(e *Element) error {
-	e.metadata()
+	e.initMetadata()
 	return floatType[GPSData](e, 5, func(vals []float64) GPS {
 		return GPS{
 			Latitude:  vals[0],
