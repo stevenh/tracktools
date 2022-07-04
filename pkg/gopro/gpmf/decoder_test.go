@@ -40,15 +40,6 @@ func TestDecoder(t *testing.T) {
 				return f
 			},
 		},
-		{
-			name: "goodwood-mp4",
-			reader: func(t *testing.T) io.ReadSeeker {
-				t.Helper()
-				f, err := os.Open("../../../test/GOPR1100-JOINED.mp4")
-				require.NoError(t, err)
-				return f
-			},
-		},
 	}
 
 	for _, tc := range tests {
