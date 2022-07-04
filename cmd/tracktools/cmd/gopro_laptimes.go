@@ -9,7 +9,7 @@ import (
 	"github.com/stevenh/tracktools/pkg/gopro/gpmf/geo"
 )
 
-// goproLapTimesCmd represents the convert command.
+// goproLapTimesCmd represents the gopro laptimes command.
 type goproLapTimesCmd struct {
 	Start     Start
 	Tolerance float64
