@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/stevenh/tracktools/pkg/gopro/gpmf"
 	"github.com/stevenh/tracktools/pkg/gopro/gpmf/geo"
@@ -14,7 +15,8 @@ type goproLapTimesCmd struct {
 	Start     Start
 	Tolerance float64
 
-	p *geo.Processor
+	p     *geo.Processor
+	found int
 }
 
 func (c *goproLapTimesCmd) RunE(cmd *cobra.Command, args []string) error {
@@ -38,28 +40,37 @@ func (c *goproLapTimesCmd) RunE(cmd *cobra.Command, args []string) error {
 func (c *goproLapTimesCmd) process(dec *gpmf.Decoder, file string) error {
 	f, err := os.Open(file)
 	if err != nil {
-		return err
+		return fmt.Errorf("laptimes: open %w", err)
 	}
 
 	defer f.Close() // nolint: errcheck
 
 	data, err := dec.Decode(f)
 	if err != nil {
-		return err
+		return fmt.Errorf("laptimes: decode %q: %w", file, err)
 	}
 
-	return gpmf.Walk(data, c.walk)
+	if err := gpmf.Walk(data, c.walk); err != nil {
+		return fmt.Errorf("laptimes: walk %q: %w", file, err)
+	}
+
+	if c.found == 0 {
+		return fmt.Errorf("laptimes: walk %q: no laps found", file)
+	}
+
+	return nil
 }
 
 func (c *goproLapTimesCmd) walk(e *gpmf.Element) error {
-	data, ok := e.Data.([]gpmf.GPS)
+	data, ok := e.Data.(gpmf.GPSData)
 	if !ok {
 		return nil
 	}
 
 	for _, v := range data {
 		if c.p.OnLine(v.Latitude, v.Longitude, c.Start.lat1, c.Start.lon1, c.Start.lat2, c.Start.lon2) {
-			fmt.Println("start:", v)
+			log.Info().Object("gps", v).Msg("start line passed")
+			c.found++
 		}
 	}
 

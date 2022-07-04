@@ -3,6 +3,8 @@ package gpmf
 import (
 	"fmt"
 	"time"
+
+	"github.com/rs/zerolog"
 )
 
 // GPSData represents GPS data.
@@ -36,6 +38,16 @@ func (g GPS) String() string {
 		g.Speed3D,
 		g.Offset,
 	)
+}
+
+// MarshalZerologObject implements zerolog.LogObjectMarshaler.
+func (g GPS) MarshalZerologObject(e *zerolog.Event) {
+	e.Float64("latitude", g.Latitude).
+		Float64("longitude", g.Longitude).
+		Float64("altitude", g.Altitude).
+		Float64("speed", g.Speed).
+		Float64("speed3d", g.Speed3D).
+		Str("offset", g.Offset.String())
 }
 
 func parseGPS(e *Element) error {
