@@ -32,6 +32,13 @@ SkipNames = [] # Filenames to skip
 Tolerance = 1
 Start = {Latitude = 0, Longitude = 0, Bearing = 0, Distance = 10}
 
+[gopro.render]
+Width = 4096
+Height = 2160
+MinDoP = 10
+MinGood = 5
+Start = {Latitude = 0, Longitude = 0, Bearing = 0, Distance = 10}
+
 [convert]
 Decoder = "trackaddict"
 Encoder = "laptimer"
