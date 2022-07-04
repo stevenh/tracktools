@@ -61,7 +61,7 @@ func (x Int16_16) mul(y Int16_16) Int16_16 {
 
 // muli multiplies two integer values, returning the signed integer
 // result as two signed values.
-func muli[I ~int32 | ~int64, O uint32 | uint64](s int, u, v I) (lo, hi O) { // nolint: ireturn
+func muli[I ~int32 | ~int64, O uint32 | uint64](s int, u, v I) (lo, hi O) {
 	var mask I = 1<<s - 1
 
 	u1 := O(u >> s)
