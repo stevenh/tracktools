@@ -104,7 +104,7 @@ func (g *Gnomonic) Reverse(lat0, lon0, x, y float64) (lat, lon, azi, rk float64)
 	azi0 := atan2d(x, y)
 	rho := math.Hypot(x, y)
 	s := g.radius * math.Atan(rho/g.radius)
-	little := rho <= g.radius // nolint: ifshort
+	little := rho <= g.radius
 
 	if !little {
 		rho = 1 / rho
