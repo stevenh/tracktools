@@ -62,12 +62,11 @@ func (c *goproRenderCmd) RunE(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// walk is a gpmf.WalkFunc which looks for GPS data, validates
-// it and stores if it passes.
-// Validation is based off the GPS Dilution of Precision value
-// with only values above MinDoP being used.
-// MinGood is also used to filter out bad data close to the
-// start of the dataset.
+// walk is a gpmf.WalkFunc which looks for GPS data, validates and
+// stores for rendering if it passes.
+// Validation is based off the GPS Dilution of Precision with only values
+// above MinDoP being used. MinGood is also used to filter out bad data
+// close to the start of the dataset.
 func (c *goproRenderCmd) walk(e *gpmf.Element) error {
 	data, ok := e.Data.(gpmf.GPSData)
 	if !ok {
