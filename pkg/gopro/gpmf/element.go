@@ -210,12 +210,6 @@ func (e *Element) format(parent *Element) error {
 // formatBasic stores the.Data version according
 // to its Header information.
 func (e *Element) formatBasic(parent *Element) error { // nolint: cyclop
-	// Ensure raw data is valid ReadData will have ensured this.
-	// TODO(steve): remove?
-	if e.Header.Type != Nested && int64(len(e.raw)) != e.Total-e.padding {
-		return fmt.Errorf("element: %s: unexpected raw len %d != %d", e, len(e.raw), e.Total-e.padding)
-	}
-
 	switch e.Header.Type {
 	case Int8:
 		return e.formatInt8s()

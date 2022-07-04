@@ -94,28 +94,6 @@ func (d *Decoder) readChunk(rs io.ReadSeeker,
 	return data, nil
 }
 
-// offsetWalker traverses Elements and sets their time offset.
-type offsetWalker struct {
-	start, end time.Duration
-}
-
-// newOffsetWalker creates a new offsetWalker.
-func newOffsetWalker(start, end uint64, units time.Duration) *offsetWalker {
-	return &offsetWalker{
-		start: time.Duration(start) * units,
-		end:   time.Duration(end) * units,
-	}
-}
-
-// walk is WalkFunc which sets offsets.
-func (o *offsetWalker) walk(e *Element) error {
-	if v, ok := e.Data.(offseter); ok {
-		v.offsets(o.start, o.end)
-	}
-
-	return nil
-}
-
 // decodeTrak decodes all chunks from single tracks data as detailed in stbl from rs.
 func (d *Decoder) decodeTrak(rs io.ReadSeeker, stbl *mp4.StblBox, units time.Duration) ([]*Element, error) {
 	chunkOffsets, err := d.chunkOffsets(stbl)
