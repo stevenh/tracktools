@@ -3,10 +3,18 @@ package cmd
 import (
 	"fmt"
 	"time"
+
+	"github.com/tidwall/geodesic"
 )
 
 const (
+	// dateFormat is the format used for date output.
 	dateFormat = "2006-01-02"
+)
+
+var (
+	// gd is the geodesic used for calculations.
+	gd = geodesic.WGS84
 )
 
 type date time.Time
@@ -47,4 +55,21 @@ func (d *date) Set(val string) error {
 // Type implements pflags.Value.
 func (d date) Type() string {
 	return "date"
+}
+
+// Start represents a track start point.
+type Start struct {
+	Latitude  float64
+	Longitude float64
+	Bearing   float64
+	Distance  float64
+
+	lat1, lon1 float64
+	lat2, lon2 float64
+}
+
+// calculates the start and end latitudes and longitudes of the start line.
+func (s *Start) calculate() {
+	gd.Direct(s.Latitude, s.Longitude, s.Bearing+90, s.Distance, &s.lat1, &s.lon1, nil)
+	gd.Direct(s.Latitude, s.Longitude, s.Bearing-90, s.Distance, &s.lat2, &s.lon2, nil)
 }

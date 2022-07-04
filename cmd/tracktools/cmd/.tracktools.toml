@@ -28,6 +28,10 @@ LogLevel = "warn"
 Overwrite = false # Overwrite existing files.
 SkipNames = [] # Filenames to skip
 
+[gopro.laptimes]
+Tolerance = 1
+Start = {Latitude = 0, Longitude = 0, Bearing = 0, Distance = 10}
+
 [convert]
 Decoder = "trackaddict"
 Encoder = "laptimer"
