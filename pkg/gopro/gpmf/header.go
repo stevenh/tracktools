@@ -71,6 +71,16 @@ func (h *Header) MarshalJSON() ([]byte, error) {
 	})
 }
 
+// String implements stringer.
+func (h Header) String() string {
+	return fmt.Sprintf("key: %s type: %s size: %d count: %d",
+		h.FourCC(),
+		h.Type,
+		h.Size,
+		h.Count,
+	)
+}
+
 // validate validates h.
 func (h Header) validate() error {
 	for i, c := range h.Key[:] {
