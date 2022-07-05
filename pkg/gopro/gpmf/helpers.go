@@ -2,14 +2,12 @@ package gpmf
 
 import (
 	"fmt"
+	"strings"
 )
 
 // validateTypeDef validates that e has a type definition which matches size and typeDef.
-func validateTypeDef(e *Element, size byte, typeDef string) error {
+func validateTypeDef(e *Element, typeDefs map[string]byte) error {
 	f := e.friendlyName()
-	if e.Header.Size != size {
-		return fmt.Errorf("%s: unexpected data size %d (expected %d)", f, e.Header.Size, size)
-	}
 
 	td, ok := e.Metadata[friendlyName(KeyTypeDef)]
 	if !ok {
@@ -21,9 +19,16 @@ func validateTypeDef(e *Element, size byte, typeDef string) error {
 		return fmt.Errorf("%s: unexpected type def type %T (expected string)", f, td)
 	}
 
-	if t != typeDef {
-		return fmt.Errorf("%s: unexpected type def type %sq (expected %q)", f, t, faceTypeDef)
+	types := make([]string, 0, len(typeDefs))
+	for k, v := range typeDefs {
+		if t == k {
+			if e.Header.Size != v {
+				return fmt.Errorf("%s: unexpected data size %d (expected %d)", f, e.Header.Size, v)
+			}
+			return nil
+		}
+		types = append(types, k)
 	}
 
-	return nil
+	return fmt.Errorf("%s: unexpected type def type %q (expected one of %s)", f, t, strings.Join(types, ","))
 }

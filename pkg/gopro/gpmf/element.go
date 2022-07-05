@@ -272,7 +272,7 @@ func (e *Element) formatInt8s() error {
 		return nil
 	}
 
-	d := make([]int8, e.Header.Count)
+	d := make([]int8, e.size)
 	for i, v := range e.raw {
 		d[i] = int8(v)
 	}
