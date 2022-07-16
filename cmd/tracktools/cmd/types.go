@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/tidwall/geodesic"
@@ -36,7 +35,6 @@ func (d date) String() string {
 
 // Set implements pflags.Value.
 func (d *date) Set(val string) error {
-	fmt.Println("date:", val)
 	if val == "" {
 		// Ignore empty values.
 		return nil
