@@ -31,8 +31,17 @@ func loadConfig(cmd *cobra.Command, cfg any) error {
 		}
 	})
 
+	dec, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
+		Metadata:   nil,
+		DecodeHook: mapstructure.TextUnmarshallerHookFunc(),
+		Result:     cfg,
+	})
+	if err != nil {
+		return fmt.Errorf("load config: new decoder: %w", err)
+	}
+
 	// Decode the remaining config into cfg.
-	if err := mapstructure.Decode(data, cfg); err != nil {
+	if err := dec.Decode(data); err != nil {
 		return fmt.Errorf("load config: decode: %w", err)
 	}
 
