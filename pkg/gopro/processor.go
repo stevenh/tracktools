@@ -172,6 +172,8 @@ func (p *Processor) Process() ([]string, error) {
 		f, err := p.processSet(s)
 		if err != nil {
 			return files, err
+		} else if f == "" {
+			continue
 		}
 
 		files = append(files, f)

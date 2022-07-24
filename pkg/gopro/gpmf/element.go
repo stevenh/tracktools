@@ -183,7 +183,7 @@ func (e *Element) initMetadata() {
 // format returns the element data formatted according
 // to its Header information.
 func (e *Element) format(parent *Element) error {
-	if err := e.formatBasic(parent); err != nil {
+	if err := e.formatBasic(); err != nil {
 		return err
 	}
 
@@ -209,7 +209,7 @@ func (e *Element) format(parent *Element) error {
 
 // formatBasic stores the.Data version according
 // to its Header information.
-func (e *Element) formatBasic(parent *Element) error { // nolint: cyclop
+func (e *Element) formatBasic() error { // nolint: cyclop
 	switch e.Header.Type {
 	case Int8:
 		return e.formatInt8s()
@@ -218,7 +218,7 @@ func (e *Element) formatBasic(parent *Element) error { // nolint: cyclop
 	case String, FourCC, GUID:
 		return e.formatStrings()
 	case Int16:
-		return e.formatInt16s(parent)
+		return e.formatInt16s()
 	case Uint16:
 		return e.formatUint16s()
 	case Float32:
@@ -312,7 +312,7 @@ func (e *Element) formatStrings() error {
 	return nil
 }
 
-func (e *Element) formatInt16s(parent *Element) error {
+func (e *Element) formatInt16s() error {
 	size := 2
 	count := int(e.size) / size
 	if count == 1 {
