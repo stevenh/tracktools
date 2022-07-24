@@ -59,6 +59,7 @@ linters:
     - gomoddirectives
     - ifshort
     - ireturn
+    - nosnakecase
 
 issues:
   exclude-use-default: false

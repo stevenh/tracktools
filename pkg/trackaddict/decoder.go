@@ -37,7 +37,7 @@ func NewDecoder(r io.Reader, options ...Option) (*Decoder, error) {
 }
 
 // setup sets up column parsers.
-func (d *Decoder) columns(s *Session, cols []string) error { // nolint: gocyclo,cyclop
+func (d *Decoder) columns(cols []string) error { // nolint: gocyclo,cyclop
 	for _, col := range cols {
 		switch col {
 		case "Time":
@@ -227,7 +227,7 @@ func (d *Decoder) Decode() (*Session, error) {
 
 			if d.parsers == nil {
 				// First row must be the column names.
-				if err := d.columns(s, rec); err != nil {
+				if err := d.columns(rec); err != nil {
 					return nil, err
 				}
 			} else if err = d.process(n, lap, rec); err != nil {

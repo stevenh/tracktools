@@ -34,10 +34,10 @@ func (g *GPS) parseCoordinate(lat, long, head string) error {
 	if err := g.parseLatitude(lat); err != nil {
 		return err
 	}
-	if err := g.parseLongitude(lat); err != nil {
+	if err := g.parseLongitude(long); err != nil {
 		return err
 	}
-	return g.parseHeading(lat)
+	return g.parseHeading(head)
 }
 
 func parseGPSUpdate(r *Record, value string) (err error) {
