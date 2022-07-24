@@ -14,7 +14,7 @@ type goproConvertCmd struct {
 }
 
 func (c *goproConvertCmd) RunE(cmd *cobra.Command, args []string) error {
-	if err := loadConfig(cmd, c); err != nil {
+	if err := loadConfig(cmd, &c.cfg); err != nil {
 		return err
 	}
 
