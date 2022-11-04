@@ -151,8 +151,9 @@ func (g *Gnomonic) Reverse(lat0, lon0, x, y float64) (lat, lon, azi, rk float64)
 // IntersectExt returns the intersection of lines A and B defined
 // by their end points as latitudes in the range [−90°, 90°] and
 // longitudes in degrees if they are extended.
-//   Line A: point 1 (lat1a, lon1a) -> point 2 (lat2a, lon2a)
-//   Line B: point 1 (lat1b, lon1b) -> point 2 (lat2b, lon2b)
+//
+//	Line A: point 1 (lat1a, lon1a) -> point 2 (lat2a, lon2a)
+//	Line B: point 1 (lat1b, lon1b) -> point 2 (lat2b, lon2b)
 //
 // It returns the latitude, longitide of intersection point and
 // the azimuths:
@@ -207,8 +208,9 @@ func (g *Gnomonic) IntersectExt(
 // Intersect returns the intersection latitude and longitude
 // of lines A and B defined by their end points as latitudes in
 // the range [−90°, 90°] and longitudes in degrees.
-//   Line A: point 1 (lat1a, lon1a) -> point 2 (lat2a, lon2a)
-//   Line B: point 1 (lat1b, lon1b) -> point 2 (lat2b, lon2b)
+//
+//	Line A: point 1 (lat1a, lon1a) -> point 2 (lat2a, lon2a)
+//	Line B: point 1 (lat1b, lon1b) -> point 2 (lat2b, lon2b)
 func (g *Gnomonic) Intersect(
 	lat1a, lon1a,
 	lat2a, lon2a,

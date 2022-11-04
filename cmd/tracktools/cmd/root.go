@@ -53,7 +53,7 @@ func Execute() {
 	}
 }
 
-func init() { // nolint: gochecknoinits
+func init() { //nolint: gochecknoinits
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	newRoot()

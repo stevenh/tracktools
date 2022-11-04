@@ -39,7 +39,7 @@ func (h Header) Nested() bool {
 // Scalable returns true if its type is scalable,
 // false otherwise.
 func (h Header) Scalable() bool {
-	switch h.Type { // nolint: exhaustive
+	switch h.Type { //nolint: exhaustive
 	case Int8, Uint8,
 		Int16, Uint16,
 		Int32, Uint32,

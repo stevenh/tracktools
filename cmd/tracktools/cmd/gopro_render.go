@@ -35,7 +35,7 @@ func (c *goproRenderCmd) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("render: open %w", err)
 	}
 
-	defer f.Close() // nolint: errcheck
+	defer f.Close() //nolint: errcheck
 
 	data, err := dec.Decode(f)
 	if err != nil {
@@ -130,6 +130,6 @@ func addGoproRender() {
 	goproCmd.AddCommand(cmd)
 }
 
-func init() { // nolint: gochecknoinits
+func init() { //nolint: gochecknoinits
 	addGoproRender()
 }

@@ -75,7 +75,7 @@ func (s *Session) PredictOBD(predictor interp.FittablePredictor) error {
 		case 0:
 			predictors[i] = predictor
 		default:
-			// nolint: forcetypeassert
+			//nolint: forcetypeassert
 			predictors[i] = reflect.New(reflect.ValueOf(predictor).Elem().Type()).
 				Interface().(interp.FittablePredictor)
 		}

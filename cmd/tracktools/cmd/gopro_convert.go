@@ -54,6 +54,6 @@ func addGoproConvert() {
 	goproCmd.AddCommand(cmd)
 }
 
-func init() { // nolint: gochecknoinits
+func init() { //nolint: gochecknoinits
 	addGoproConvert()
 }

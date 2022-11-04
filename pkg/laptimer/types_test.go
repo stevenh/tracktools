@@ -201,7 +201,7 @@ func TestIntermediatesXML(t *testing.T) {
 	}
 	data, err := xml.Marshal(v1)
 	require.NoError(t, err)
-	require.Equal(t, `<Intermediates>&#xA;&#x9;&#x9;&#x9;00:27.90,1142.1&#xA;&#x9;&#x9;&#x9;00:44.95,1862.0&#xA;&#x9;&#x9;</Intermediates>`, string(data)) // nolint: lll
+	require.Equal(t, `<Intermediates>&#xA;&#x9;&#x9;&#x9;00:27.90,1142.1&#xA;&#x9;&#x9;&#x9;00:44.95,1862.0&#xA;&#x9;&#x9;</Intermediates>`, string(data)) //nolint: lll
 
 	var v2 Intermediates
 	err = xml.Unmarshal(data, &v2)

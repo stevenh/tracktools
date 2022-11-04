@@ -133,7 +133,7 @@ func (c *Config) Load(file string) error {
 		return fmt.Errorf("config load: %w", err)
 	}
 
-	defer f.Close() // nolint: errcheck
+	defer f.Close() //nolint: errcheck
 
 	if c == nil {
 		c = &Config{}

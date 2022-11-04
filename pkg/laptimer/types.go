@@ -692,9 +692,9 @@ type Duration time.Duration
 func (d Duration) String() string {
 	dur := time.Duration(d)
 	m := dur / time.Minute
-	mv := m * time.Minute // nolint: durationcheck
+	mv := m * time.Minute //nolint: durationcheck
 	s := (dur - mv) / time.Second
-	sv := s * time.Second // nolint: durationcheck
+	sv := s * time.Second //nolint: durationcheck
 	cs := (dur - mv - sv) / time.Millisecond / 10
 
 	return fmt.Sprintf("%02d:%02d.%02d",

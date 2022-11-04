@@ -18,7 +18,7 @@ func TestOSFS(t *testing.T) {
 
 	name := tf.Name()
 
-	defer os.Remove(name) // nolint: errcheck
+	defer os.Remove(name) //nolint: errcheck
 
 	now := time.Now().Round(0)
 	err = o.Chtimes(name, now, now)

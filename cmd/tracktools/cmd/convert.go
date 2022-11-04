@@ -31,7 +31,7 @@ type convertCmd struct {
 	StartDate date
 }
 
-func (c *convertCmd) RunE(cmd *cobra.Command, args []string) (err error) { // nolint: nonamedreturns
+func (c *convertCmd) RunE(cmd *cobra.Command, args []string) (err error) { //nolint: nonamedreturns
 	if err := loadConfig(cmd, c); err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (c *convertCmd) RunE(cmd *cobra.Command, args []string) (err error) { // no
 		if err != nil {
 			return fmt.Errorf("convert: input %w", err)
 		}
-		defer f.Close() // nolint: errcheck
+		defer f.Close() //nolint: errcheck
 		input = f
 	}
 
@@ -156,6 +156,6 @@ func addConvertCmd() {
 	rootCmd.AddCommand(cmd)
 }
 
-func init() { // nolint: gochecknoinits
+func init() { //nolint: gochecknoinits
 	addConvertCmd()
 }

@@ -56,7 +56,7 @@ func (e *Encoder) Encode(v any) error {
 
 	errs := e.run(r)
 	if err := enc.Encode(v); err != nil {
-		w.Close() // nolint: errcheck
+		w.Close() //nolint: errcheck
 		return fmt.Errorf("encode: %w", err)
 	}
 
