@@ -22,7 +22,7 @@ func TestDecoder(t *testing.T) {
 		t.Run(tc, func(t *testing.T) {
 			f, err := os.Open(filepath.Join("../../../test", tc+".mp4"))
 			require.NoError(t, err)
-			defer f.Close() // nolint: errcheck
+			defer f.Close() //nolint: errcheck
 
 			dec := &Decoder{}
 			_, err = dec.Decode(f)

@@ -42,7 +42,7 @@ func floatType[T ~[]E, E any](e *Element, size int, f func([]float64) E) error {
 }
 
 // floatSlice converts data to a []float64.
-func floatSlice(data any) ([]float64, error) { // nolint: gocyclo,cyclop
+func floatSlice(data any) ([]float64, error) { //nolint: gocyclo,cyclop
 	switch v := data.(type) {
 	case []int8:
 		return toFloatSlice(v), nil

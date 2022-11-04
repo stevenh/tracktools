@@ -43,7 +43,7 @@ func (c *goproLapTimesCmd) process(dec *gpmf.Decoder, file string) error {
 		return fmt.Errorf("laptimes: open %w", err)
 	}
 
-	defer f.Close() // nolint: errcheck
+	defer f.Close() //nolint: errcheck
 
 	data, err := dec.Decode(f)
 	if err != nil {
@@ -98,6 +98,6 @@ func addGoproLapTimes() {
 	goproCmd.AddCommand(cmd)
 }
 
-func init() { // nolint: gochecknoinits
+func init() { //nolint: gochecknoinits
 	addGoproLapTimes()
 }

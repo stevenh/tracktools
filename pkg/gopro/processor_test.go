@@ -325,7 +325,7 @@ func TestProcessorProcess(t *testing.T) {
 			var once sync.Once
 			closeWriter := func() {
 				// Close our copy of the files to allow pipe to trigger.
-				pw.Close() // nolint: errcheck
+				pw.Close() //nolint: errcheck
 			}
 
 			errs := make(chan error, 1)
@@ -416,7 +416,7 @@ func TestHelperProcess(t *testing.T) {
 	switch cmd {
 	case "ffmpeg":
 		fmt.Printf("%d:%s\n", os.Getpid(), args[len(args)-1])
-		os.Stdout.Close() // nolint: errcheck
+		os.Stdout.Close() //nolint: errcheck
 
 		// Wait for signal to exit.
 		select {

@@ -1,4 +1,4 @@
-package gpmf // nolint: dupl
+package gpmf //nolint: dupl
 
 import (
 	"time"

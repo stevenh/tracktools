@@ -77,7 +77,7 @@ func TestReader(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			r := tc.reader(t)
 			if rc, ok := r.(io.Closer); ok {
-				defer rc.Close() // nolint: errcheck
+				defer rc.Close() //nolint: errcheck
 			}
 
 			data, err := reader.Read(r)

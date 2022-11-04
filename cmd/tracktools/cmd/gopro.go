@@ -11,6 +11,6 @@ var goproCmd = &cobra.Command{
 	Long:  `Provides a set of commands for manipulating GoPro videos.`,
 }
 
-func init() { // nolint: gochecknoinits
+func init() { //nolint: gochecknoinits
 	rootCmd.AddCommand(goproCmd)
 }

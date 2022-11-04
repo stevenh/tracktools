@@ -45,7 +45,7 @@ func TestDecoder(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			f, err := os.Open(tc.file)
 			require.NoError(t, err)
-			defer f.Close() // nolint: errcheck
+			defer f.Close() //nolint: errcheck
 
 			buf, err := ioutil.ReadAll(f)
 			require.NoError(t, err)

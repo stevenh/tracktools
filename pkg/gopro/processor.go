@@ -211,7 +211,7 @@ func (p *Processor) processSet(s *FileSet) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to create temporary input file: %w", err)
 	}
-	defer baseFS.Remove(f.Name()) // nolint: errcheck
+	defer baseFS.Remove(f.Name()) //nolint: errcheck
 
 	if err := p.writeInput(f, s); err != nil {
 		return "", fmt.Errorf("write input file %q: %w", f.Name(), err)
@@ -245,7 +245,7 @@ func (p *Processor) processSet(s *FileSet) (string, error) {
 	// Set the input file name by index.
 	p.cfg.Args[p.cfg.inputIndex] = f.Name()
 
-	args := append(p.cfg.Args, output) // nolint: gocritic
+	args := append(p.cfg.Args, output) //nolint: gocritic
 	p.log.Print("handle:", p.cfg.Binary, args)
 	if err = p.handler(p.cfg.Binary, args...); err != nil {
 		return "", err

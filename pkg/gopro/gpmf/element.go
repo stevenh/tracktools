@@ -209,7 +209,7 @@ func (e *Element) format(parent *Element) error {
 
 // formatBasic stores the.Data version according
 // to its Header information.
-func (e *Element) formatBasic() error { // nolint: cyclop
+func (e *Element) formatBasic() error { //nolint: cyclop
 	switch e.Header.Type {
 	case Int8:
 		return e.formatInt8s()
@@ -284,11 +284,11 @@ func (e *Element) formatInt8s() error {
 
 func (e *Element) formatUint8s() error {
 	if e.Header.Count == 1 {
-		e.Data = uint8(e.raw[0]) // nolint: unconvert
+		e.Data = uint8(e.raw[0]) //nolint: unconvert
 		return nil
 	}
 
-	e.Data = []uint8(e.raw) // nolint: unconvert
+	e.Data = []uint8(e.raw) //nolint: unconvert
 
 	return nil
 }

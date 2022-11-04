@@ -60,7 +60,11 @@ linters:
     - ifshort
     - ireturn
     - nosnakecase
+    - deadcode
+    - varcheck
 
 issues:
+  exclude:
+    - .*Duplicate words \(.\.\) found.*
   exclude-use-default: false
   max-same-issues: 0
