@@ -78,7 +78,7 @@ Second line`,
 					Acceleration: &Acceleration{
 						Source:  1,
 						Lateral: 0.21,
-						Lineral: 1.32,
+						Lineal:  1.32,
 						Coordinate: Coordinate{
 							Latitude:  50.85793657,
 							Longitude: -0.75273358,
