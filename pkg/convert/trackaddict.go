@@ -260,7 +260,7 @@ func (ta *TrackAddict) lapTimerAccel(f *laptimer.Fix, r trackaddict.Record) {
 		// http://www.gps-laptimer.com/LapTimerDocumentation%20-%20Acceleration%20Chapter.pdf
 		Source:  0, // TODO(steve): set correctly.
 		Lateral: round2dp(r.Accel.X),
-		Lineral: round2dp(r.Accel.Y),
+		Lineal:  round2dp(r.Accel.Y),
 		Coordinate: laptimer.Coordinate{
 			Longitude: r.GPS.Longitude,
 			Latitude:  r.GPS.Latitude,

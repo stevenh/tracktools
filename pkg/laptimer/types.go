@@ -19,7 +19,7 @@ const (
 type DB struct {
 	Name string `xml:"name"`
 	Laps []Lap  `xml:"lap"`
-	// Vehicles being a slice with one vehcile per looks like a bug in LapTimer
+	// Vehicles being a slice with one vehicle per looks like a bug in LapTimer
 	// but is currently how the data is exported by v24.6.
 	Vehicles []Vehicles `xml:"vehicles,omitempty"`
 	XMLName  struct{}   `xml:"LapTimerDB"`
@@ -140,7 +140,7 @@ type Vehicle struct {
 	// up of passengers and cargo.
 	Payload Float `xml:"payload,omitempty"`
 
-	// GrossVehicelMass (GVM) is the maximum operating weight as
+	// GrossVehicleMass (GVM) is the maximum operating weight as
 	// specified by the manufacturer.
 	GrossVehicleMass Float `xml:"grossVehicleMass,omitempty"`
 
@@ -164,7 +164,7 @@ type Vehicle struct {
 	// Gears specifies the gears of the vehicle.
 	Gears *Gears `xml:"gears,omitempty"`
 
-	// DriveRatio is the relationshup between the gear box's and
+	// DriveRatio is the relationship between the gear box's and
 	// the axle's RPM.
 	DriveRatio Float `xml:"driveRatio,omitempty"`
 
@@ -230,7 +230,7 @@ type Vehicle struct {
 	// Year is the full year the vehicle was manufactured.
 	Year int `xml:"year,omitempty"`
 
-	// ContryCode is the two digit country code for the vehicle.
+	// CountryCode is the two digit country code for the vehicle.
 	CountryCode string `xml:"countryCode,omitempty"`
 
 	// TurningCircle is the minimum turning circle in meters.
@@ -281,11 +281,11 @@ type Gears struct {
 // Gear represents an individual gear of a vehicle.
 type Gear struct {
 	// Number is the number of the gear.
-	Number int
+	Number int `xml:"number"`
 
 	// Ratio is the relationship between the engine's and the
 	// gear box's RPM.
-	Ratio float64
+	Ratio float64 `xml:"ratio"`
 }
 
 // MarshalXML implements xml.Marshaler.
@@ -313,17 +313,17 @@ func (g *Gear) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error {
 // Tyre represents a tyre specification.
 type Tyre struct {
 	// Width is the width of the tyre.
-	Width int
+	Width int `xml:"width"`
 
 	// Profile is the height of the sidewall as a percentage
 	// of is width.
-	Profile int
+	Profile int `xml:"profile"`
 
 	// Size is the diameter of the tyre in inches.
-	Size int
+	Size int `xml:"size"`
 
 	// SpeedRating is the speed rating for the tyre.
-	SpeedRating string
+	SpeedRating string `xml:"speedrating"`
 }
 
 // MarshalXML implements xml.Marshaler.
@@ -450,8 +450,8 @@ type Fix struct {
 
 // Coordinate represents a GPS coordinate without altitude.
 type Coordinate struct {
-	Latitude  float64
-	Longitude float64
+	Latitude  float64 `xml:"latitude"`
+	Longitude float64 `xml:"longitude"`
 }
 
 // MarshalXML implements xml.Marshaler.
@@ -484,10 +484,10 @@ func (c *Coordinate) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) erro
 
 // AltitudeCoordinate represents a GPS coordinate including altitude.
 type AltitudeCoordinate struct {
-	Coordinate
+	Coordinate `xml:"coordinate"`
 
 	// Altitude is the distance above sea level in meters.
-	Altitude float64
+	Altitude float64 `xml:"altitude"`
 }
 
 // MarshalXML implements xml.Marshaler.
@@ -522,15 +522,15 @@ func (c *AltitudeCoordinate) UnmarshalXML(dec *xml.Decoder, start xml.StartEleme
 // Positioning represents the state of positioning information.
 type Positioning struct {
 	// DifferentialStatus identifies the differential GPS status of this Fix.
-	DifferentialStatus DifferentialStatus
+	DifferentialStatus DifferentialStatus `xml:"differentialstatus"`
 
 	// PositionFixing identifies how the Fix was obtained.
-	PositionFixing PositionFixing
+	PositionFixing PositionFixing `xml:"positionfixing"`
 
 	// Interpolated is true for any Fix calculated by LapTimer using
 	// interpolation to approximate a trigger line has passed, false
 	// if read directly from the GPS.
-	Interpolated bool
+	Interpolated bool `xml:"interpolated"`
 }
 
 // MarshalXML implements xml.Marshaler.
@@ -573,10 +573,10 @@ func (p *Positioning) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) err
 // RelativeToStart represents the time a distance relative to the start of the Lap.
 type RelativeToStart struct {
 	// Distance in meters in 2D only.
-	Distance float64
+	Distance float64 `xml:"distance"`
 
 	// Offset is the time since the start of the Lap.
-	Offset Duration
+	Offset Duration `xml:"offset"`
 }
 
 // MarshalXML implements xml.Marshaler.
@@ -619,8 +619,8 @@ type Acceleration struct {
 	// Lateral is the lateral acceleration in G as a result of turning.
 	Lateral Float2dp `xml:"lateral"`
 
-	// Lineral is the lineral acceleration in G as a result of accelerating or braking.
-	Lineral Float2dp `xml:"lineal"`
+	// Lineal is the lineal acceleration in G as a result of accelerating or braking.
+	Lineal Float2dp `xml:"lineal"`
 
 	// Coordinate GPS position for the red/yellow/green display of
 	// lateral acceleration.

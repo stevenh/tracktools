@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	// alignment is the alignment in bytes of gpfm data (32bit).
+	// alignment is the alignment in bytes of gpmf data (32bit).
 	alignment = 4
 
 	// dataFormat for Date.
@@ -29,7 +29,7 @@ var (
 		"\xB5", "µ",
 	)
 
-	// byteOrder is the byte order for gpfm data.
+	// byteOrder is the byte order for gpmf data.
 	byteOrder = binary.BigEndian
 )
 
@@ -105,7 +105,7 @@ func (e *Element) Add(other *Element) error {
 // MarshalJSON implements json.Marshaler.
 func (e *Element) MarshalJSON() ([]byte, error) {
 	type Alias Element
-	v := &struct {
+	v := &struct { //nolint: musttag
 		Level int
 		*Alias
 	}{

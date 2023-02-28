@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/edgeware/mp4ff/mp4"
+	"github.com/Eyevinn/mp4ff/mp4"
 )
 
 const (
@@ -110,7 +110,7 @@ func (d *Decoder) decodeTrak(rs io.ReadSeeker, stbl *mp4.StblBox, units time.Dur
 	stsz := stbl.Stsz
 
 	// Entries in stsc box.
-	entries := len(stsc.FirstChunk)
+	entries := len(stsc.Entries)
 	lastSampleNr := stbl.Stsz.GetNrSamples() - 1
 
 	var (
@@ -123,14 +123,14 @@ func (d *Decoder) decodeTrak(rs io.ReadSeeker, stbl *mp4.StblBox, units time.Dur
 	var data []*Element
 	timeNext := stts.SampleCount[timeIdx]
 	dur := stts.SampleTimeDelta[timeIdx]
-	for i := 0; i < entries; i++ {
-		chunkNr = stsc.FirstChunk[i]
-		chunkLen := stsc.SamplesPerChunk[i]
+	for i, entry := range stsc.Entries {
+		chunkNr = entry.FirstChunk
+		chunkLen := entry.SamplesPerChunk
 
 		// Used to change group of chunks.
 		var nextEntryStart uint32
 		if i < entries-1 {
-			nextEntryStart = stsc.FirstChunk[i+1]
+			nextEntryStart = stsc.Entries[i+1].FirstChunk
 		}
 
 		for {

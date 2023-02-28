@@ -60,7 +60,7 @@ func (h Header) FourCC() string {
 // MarshalJSON implements json.Marshaler.
 func (h *Header) MarshalJSON() ([]byte, error) {
 	type Alias Header
-	return json.Marshal(&struct {
+	return json.Marshal(&struct { //nolint: musttag
 		Key  string
 		Type string
 		*Alias
