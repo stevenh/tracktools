@@ -78,7 +78,7 @@ func (t *testFS) CreateTemp(dir, pattern string) (tempFile, error) {
 	return f, nil
 }
 
-func (t *testFS) Chtimes(name string, atime time.Time, mtime time.Time) error {
+func (t *testFS) Chtimes(name string, _ time.Time, mtime time.Time) error {
 	t.mtx.Lock()
 	defer t.mtx.Unlock()
 

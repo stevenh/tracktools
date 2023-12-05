@@ -13,7 +13,7 @@ type goproConvertCmd struct {
 	cfg gopro.Config
 }
 
-func (c *goproConvertCmd) RunE(cmd *cobra.Command, args []string) error {
+func (c *goproConvertCmd) RunE(cmd *cobra.Command, _ []string) error {
 	if err := loadConfig(cmd, &c.cfg); err != nil {
 		return err
 	}

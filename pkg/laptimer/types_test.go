@@ -149,7 +149,7 @@ func TestFloat0dpXML(t *testing.T) {
 	var v2 Float0dp
 	err = xml.Unmarshal(data, &v2)
 	require.NoError(t, err)
-	require.Equal(t, v1, v2)
+	require.Equal(t, v1, v2) //nolint: testifylint
 }
 
 func TestFloat1dpXML(t *testing.T) {
@@ -161,7 +161,7 @@ func TestFloat1dpXML(t *testing.T) {
 	var v2 Float1dp
 	err = xml.Unmarshal(data, &v2)
 	require.NoError(t, err)
-	require.Equal(t, v1, v2)
+	require.Equal(t, v1, v2) //nolint: testifylint
 }
 
 func TestFloat2dpXML(t *testing.T) {
@@ -173,7 +173,7 @@ func TestFloat2dpXML(t *testing.T) {
 	var v2 Float2dp
 	err = xml.Unmarshal(data, &v2)
 	require.NoError(t, err)
-	require.Equal(t, v1, v2)
+	require.Equal(t, v1, v2) //nolint: testifylint
 }
 
 func TestSyncPointXML(t *testing.T) {

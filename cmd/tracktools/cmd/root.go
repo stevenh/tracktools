@@ -60,7 +60,7 @@ func init() { //nolint: gochecknoinits
 }
 
 // PersistentPreRunE initialises our config.
-func (r *rootCommand) PersistentPreRunE(cmd *cobra.Command, args []string) error {
+func (r *rootCommand) PersistentPreRunE(_ *cobra.Command, _ []string) error {
 	v := viper.GetViper()
 
 	switch r.Verbose {
@@ -76,11 +76,7 @@ func (r *rootCommand) PersistentPreRunE(cmd *cobra.Command, args []string) error
 
 	v.AutomaticEnv()
 
-	if err := r.loadConfig(v); err != nil {
-		return err
-	}
-
-	return nil
+	return r.loadConfig(v)
 }
 
 // configSpec sets our config spec on v.
