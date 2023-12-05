@@ -62,6 +62,8 @@ linters:
     - nosnakecase
     - deadcode
     - varcheck
+    # Seems to be broken and just reports all the time.
+    - depguard
 
 issues:
   exclude:
