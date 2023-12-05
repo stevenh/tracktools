@@ -13,5 +13,5 @@ func sig(pid int) error {
 }
 
 // cmdSetup for other OSes does nothing.
-func cmdSetup(cmd *exec.Cmd) {
+func cmdSetup(_ *exec.Cmd) {
 }
