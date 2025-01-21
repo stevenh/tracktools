@@ -12,7 +12,7 @@ import (
 
 // Dump dumps data as JSON.
 func Dump(data []*Element) error {
-	d := struct { //nolint: musttag
+	d := struct {
 		Data []*Element
 	}{Data: data}
 

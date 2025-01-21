@@ -38,7 +38,7 @@ func (c *goproLapTimesCmd) RunE(cmd *cobra.Command, args []string) error {
 }
 
 func (c *goproLapTimesCmd) process(dec *gpmf.Decoder, file string) error {
-	f, err := os.Open(file)
+	f, err := os.Open(file) //nolint: gosec // Yes it is.
 	if err != nil {
 		return fmt.Errorf("laptimes: open %w", err)
 	}

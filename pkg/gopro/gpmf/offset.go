@@ -26,8 +26,8 @@ type offsetWalker struct {
 // newOffsetWalker creates a new offsetWalker.
 func newOffsetWalker(start, end uint64, units time.Duration) *offsetWalker {
 	return &offsetWalker{
-		start: time.Duration(start) * units,
-		end:   time.Duration(end) * units,
+		start: time.Duration(start) * units, //nolint: gosec
+		end:   time.Duration(end) * units,   //nolint: gosec
 	}
 }
 

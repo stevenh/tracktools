@@ -19,13 +19,13 @@ const (
 
 var (
 	// Red represents the color Red.
-	Red = color.RGBA{R: 255, A: 0xff}
+	Red = color.RGBA{R: 255, A: 0xff} //nolint: mnd
 
 	// Green represents the color Green.
-	Green = color.RGBA{G: 255, A: 0xff}
+	Green = color.RGBA{G: 255, A: 0xff} //nolint: mnd
 
 	// Blue represents the color Blue.
-	Blue = color.RGBA{B: 255, A: 0xff}
+	Blue = color.RGBA{B: 255, A: 0xff} //nolint: mnd
 )
 
 // Option is a option to a Image.
@@ -98,7 +98,7 @@ func (i *Image) Render(file string) (err error) {
 		return err
 	}
 
-	f, err := os.Create(file)
+	f, err := os.Create(file) //nolint: gosec
 	if err != nil {
 		return err
 	}
