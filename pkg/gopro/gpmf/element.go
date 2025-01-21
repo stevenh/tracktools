@@ -62,9 +62,6 @@ type Element struct {
 	// scale is the last unused scale element.
 	scale []float64
 
-	// typeDef is the format for custom types.
-	typeDef string
-
 	// size is the total data size excluding padding calculated by ReadHeader.
 	size int64
 
@@ -105,7 +102,7 @@ func (e *Element) Add(other *Element) error {
 // MarshalJSON implements json.Marshaler.
 func (e *Element) MarshalJSON() ([]byte, error) {
 	type Alias Element
-	v := &struct { //nolint: musttag
+	v := &struct {
 		Level int
 		*Alias
 	}{
@@ -316,13 +313,13 @@ func (e *Element) formatInt16s() error {
 	size := 2
 	count := int(e.size) / size
 	if count == 1 {
-		e.Data = int16(byteOrder.Uint16(e.raw))
+		e.Data = int16(byteOrder.Uint16(e.raw)) //nolint: gosec
 		return nil
 	}
 
 	d := make([]int16, count)
 	for i, j := 0, 0; i < count; i, j = i+1, j+size {
-		d[i] = int16(byteOrder.Uint16(e.raw[j:]))
+		d[i] = int16(byteOrder.Uint16(e.raw[j:])) //nolint: gosec
 	}
 
 	e.Data = d
@@ -370,13 +367,13 @@ func (e *Element) formatInt32s() error {
 	size := 4
 	count := int(e.size) / size
 	if count == 1 {
-		e.Data = int32(byteOrder.Uint32(e.raw))
+		e.Data = int32(byteOrder.Uint32(e.raw)) //nolint: gosec
 		return nil
 	}
 
 	d := make([]int32, count)
 	for i, j := 0, 0; i < count; i, j = i+1, j+size {
-		d[i] = int32(byteOrder.Uint32(e.raw[j:]))
+		d[i] = int32(byteOrder.Uint32(e.raw[j:])) //nolint: gosec
 	}
 
 	e.Data = d
@@ -406,13 +403,13 @@ func (e *Element) formatInt16_16s() error {
 	size := 8
 	count := int(e.size) / size
 	if count == 1 {
-		e.Data = Int16_16(byteOrder.Uint32(e.raw))
+		e.Data = Int16_16(byteOrder.Uint32(e.raw)) //nolint: gosec
 		return nil
 	}
 
 	d := make([]Int16_16, count)
 	for i, j := 0, 0; i < count; i, j = i+1, j+size {
-		d[i] = Int16_16(byteOrder.Uint32(e.raw[j:]))
+		d[i] = Int16_16(byteOrder.Uint32(e.raw[j:])) //nolint: gosec
 	}
 
 	e.Data = d
@@ -442,13 +439,13 @@ func (e *Element) formatInt64s() error {
 	size := 8
 	count := int(e.size) / size
 	if count == 1 {
-		e.Data = int64(byteOrder.Uint64(e.raw))
+		e.Data = int64(byteOrder.Uint64(e.raw)) //nolint: gosec
 		return nil
 	}
 
 	d := make([]int64, count)
 	for i, j := 0, 0; i < count; i, j = i+1, j+size {
-		d[i] = int64(byteOrder.Uint64(e.raw[j:]))
+		d[i] = int64(byteOrder.Uint64(e.raw[j:])) //nolint: gosec
 	}
 
 	e.Data = d
@@ -478,13 +475,13 @@ func (e *Element) formatInt32_32s() error {
 	size := 8
 	count := int(e.size) / size
 	if count == 1 {
-		e.Data = Int32_32(byteOrder.Uint64(e.raw))
+		e.Data = Int32_32(byteOrder.Uint64(e.raw)) //nolint: gosec
 		return nil
 	}
 
 	d := make([]Int32_32, count)
 	for i, j := 0, 0; i < count; i, j = i+1, j+size {
-		d[i] = Int32_32(byteOrder.Uint64(e.raw[j:]))
+		d[i] = Int32_32(byteOrder.Uint64(e.raw[j:])) //nolint: gosec
 	}
 
 	e.Data = d

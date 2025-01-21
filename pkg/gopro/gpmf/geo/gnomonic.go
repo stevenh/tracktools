@@ -170,7 +170,7 @@ func (g *Gnomonic) IntersectExt(
 	lat = (lat1a + lat2a + lat1b + lat2b) / 4
 	// Possibly need to deal with longitudes wrapping around.
 	lon = (lon1a + lon2a + lon1b + lon2b) / 4
-	for i := 0; i < numIterations; i++ {
+	for range numIterations {
 		xa1, ya1, _, _ := g.Forward(lat, lon, lat1a, lon1a)
 		xa2, ya2, _, _ := g.Forward(lat, lon, lat2a, lon2a)
 		xb1, yb1, _, _ := g.Forward(lat, lon, lat1b, lon1b)

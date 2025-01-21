@@ -17,7 +17,7 @@ func sincosd(x float64) (sin, cos float64) {
 	// the argument to the range [-45, 45] before converting it to radians.
 	r, q := remquo(x, quarterDegrees)
 	s, c := math.Sincos(r * radians)
-	switch uint(q) & 3 {
+	switch uint(q) & 3 { //nolint: gosec
 	case 0:
 		sin = s
 		cos = c

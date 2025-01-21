@@ -26,9 +26,8 @@ func Compress() EncoderOpt {
 
 // Encoder writes Harry's LapTimer xml data files.
 type Encoder struct {
-	compress bool
-	w        io.Writer
-	c        io.Closer
+	w io.Writer
+	c io.Closer
 }
 
 // NewEncoder returns a fully initialised encoder which writes its

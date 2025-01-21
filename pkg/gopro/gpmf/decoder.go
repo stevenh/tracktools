@@ -149,7 +149,7 @@ func (d *Decoder) decodeTrak(rs io.ReadSeeker, stbl *mp4.StblBox, units time.Dur
 				chunkSize += int64(size)
 			}
 
-			cd, err := d.readChunk(rs, int64(offset), chunkSize, start, dec, units)
+			cd, err := d.readChunk(rs, int64(offset), chunkSize, start, dec, units) //nolint: gosec
 			if err != nil {
 				return nil, err
 			}

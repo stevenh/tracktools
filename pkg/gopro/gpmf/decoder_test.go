@@ -20,7 +20,7 @@ func TestDecoder(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc, func(t *testing.T) {
-			f, err := os.Open(filepath.Join("../../../test", tc+".mp4"))
+			f, err := os.Open(filepath.Join("../../../test", tc+".mp4")) //nolint: gosec
 			require.NoError(t, err)
 			defer f.Close() //nolint: errcheck
 

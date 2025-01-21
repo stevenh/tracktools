@@ -44,7 +44,7 @@ func (x Int16_16) Ceil() int { return int((x + 0xffff) >> 16) }
 
 // Mul returns x*y in 26.6 fixed-point arithmetic.
 func (x Int16_16) Mul(y Int16_16) Int16_16 {
-	return Int16_16((int64(x)*int64(y) + 1<<15) >> 16)
+	return Int16_16((int64(x)*int64(y) + 1<<15) >> 16) //nolint: gosec
 }
 
 // mul (with a lower case 'm') is an alternative implementation of Int16_16.Mul
@@ -54,8 +54,8 @@ func (x Int16_16) Mul(y Int16_16) Int16_16 {
 func (x Int16_16) mul(y Int16_16) Int16_16 {
 	const M, N = 16, 16
 	lo, hi := muli[Int16_16, uint32](M, x, y)
-	ret := Int16_16(hi<<M | lo>>N)
-	ret += Int16_16((lo >> (N - 1)) & 1) // Round to nearest, instead of rounding down.
+	ret := Int16_16(hi<<M | lo>>N)       //nolint: gosec
+	ret += Int16_16((lo >> (N - 1)) & 1) //nolint: gosec // Round to nearest, instead of rounding down.
 	return ret
 }
 
@@ -120,7 +120,7 @@ func (x Int32_32) Ceil() int { return int((x + 0xFFFFFFFF) >> 32) }
 func (x Int32_32) Mul(y Int32_32) Int32_32 {
 	const M, N = 32, 32
 	lo, hi := muli[Int32_32, uint64](M, x, y)
-	ret := Int32_32(hi<<M | lo>>N)
-	ret += Int32_32((lo >> (N - 1)) & 1) // Round to nearest, instead of rounding down.
+	ret := Int32_32(hi<<M | lo>>N)       //nolint: gosec
+	ret += Int32_32((lo >> (N - 1)) & 1) //nolint: gosec // Round to nearest, instead of rounding down.
 	return ret
 }

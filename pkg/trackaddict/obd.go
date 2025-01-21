@@ -33,7 +33,7 @@ func (o OBD) appendValues(slices [][]float64) [][]float64 {
 	t := v.Type()
 	if len(slices) == 0 {
 		var j int
-		for i := 0; i < t.NumField(); i++ {
+		for i := range t.NumField() {
 			f := v.Field(i)
 			if t.Field(i).Type.Kind() == reflect.Pointer {
 				f = f.Elem()
@@ -47,7 +47,7 @@ func (o OBD) appendValues(slices [][]float64) [][]float64 {
 	}
 
 	var j int
-	for i := 0; i < t.NumField(); i++ {
+	for i := range t.NumField() {
 		f := v.Field(i)
 		if t.Field(i).Type.Kind() == reflect.Pointer {
 			f = f.Elem()
@@ -69,7 +69,7 @@ func (o *OBD) set(values []float64) {
 	t := v.Type()
 
 	var j int
-	for i := 0; i < t.NumField(); i++ {
+	for i := range t.NumField() {
 		f := v.Field(i)
 		if f.CanFloat() {
 			f.SetFloat(values[j])

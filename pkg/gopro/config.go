@@ -40,7 +40,7 @@ var (
 )
 
 // Config represents a GoPro video processing configuration.
-type Config struct { //nolint: musttag
+type Config struct {
 	LogLevel       string
 	SourceDir      string
 	Binary         string
