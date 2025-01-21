@@ -14,7 +14,7 @@ require (
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.2
 	github.com/tidwall/geodesic v0.3.5
-	golang.org/x/text v0.16.0
+	golang.org/x/text v0.21.0
 	gonum.org/v1/gonum v0.12.0
 )
 
@@ -39,8 +39,8 @@ require (
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/tkrajina/gpxgo v1.2.1 // indirect
 	golang.org/x/image v0.18.0 // indirect
-	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
