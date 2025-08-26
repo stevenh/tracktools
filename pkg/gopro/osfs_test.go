@@ -34,7 +34,8 @@ func TestOSFS(t *testing.T) {
 
 	dirs, err := o.ReadDir(name)
 	require.ErrorIs(t, err, syscall.ENOTDIR)
-	require.Equal(t, []fs.DirEntry{}, dirs)
+	var expectedDirs []fs.DirEntry
+	require.Equal(t, expectedDirs, dirs)
 
 	err = o.Remove(name)
 	require.NoError(t, err)
