@@ -10,6 +10,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func Test_ReadDir(t *testing.T) {
+	tf, err := os.CreateTemp(t.TempDir(), "os-test")
+	require.NoError(t, err)
+
+	name := tf.Name()
+	require.NoError(t, tf.Close())
+
+	dirs, err := os.ReadDir(name)
+	require.ErrorIs(t, err, syscall.ENOTDIR)
+	var expectedDirs []fs.DirEntry
+	require.Equal(t, expectedDirs, dirs)
+}
+
 func TestOSFS(t *testing.T) {
 	o := osFS{}
 	tf, err := o.CreateTemp("", "gopro-test")
@@ -18,7 +31,7 @@ func TestOSFS(t *testing.T) {
 
 	name := tf.Name()
 
-	defer os.Remove(name) //nolint: errcheck
+	t.Cleanup(func() { os.Remove(name) }) //nolint: errcheck
 
 	now := time.Now().Round(0)
 	err = o.Chtimes(name, now, now)
