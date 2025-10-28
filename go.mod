@@ -1,20 +1,20 @@
 module github.com/stevenh/tracktools
 
-go 1.24.0
+go 1.25.3
 
 require (
-	github.com/Eyevinn/mp4ff v0.49.0
+	github.com/Eyevinn/mp4ff v0.50.0
 	github.com/flopp/go-staticmaps v0.0.0-20250629121348-973b17999e19
-	github.com/golang/geo v0.0.0-20250825151631-54d70cc7cb31
+	github.com/golang/geo v0.0.0-20251028093606-67a2e55a1967
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/rs/zerolog v1.34.0
-	github.com/spf13/cobra v1.9.1
-	github.com/spf13/pflag v1.0.7
-	github.com/spf13/viper v1.20.1
-	github.com/stretchr/testify v1.11.0
+	github.com/spf13/cobra v1.10.1
+	github.com/spf13/pflag v1.0.10
+	github.com/spf13/viper v1.21.0
+	github.com/stretchr/testify v1.11.1
 	github.com/tidwall/geodesic v1.52.4
-	golang.org/x/text v0.28.0
+	golang.org/x/text v0.30.0
 	gonum.org/v1/gonum v0.16.0
 )
 
@@ -33,18 +33,19 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/sagikazarmark/locafero v0.10.0 // indirect
-	github.com/sourcegraph/conc v0.3.1-0.20240121214520-5f936abd7ae8 // indirect
-	github.com/spf13/afero v1.14.0 // indirect
-	github.com/spf13/cast v1.9.2 // indirect
+	github.com/sagikazarmark/locafero v0.12.0 // indirect
+	github.com/spf13/afero v1.15.0 // indirect
+	github.com/spf13/cast v1.10.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tkrajina/gpxgo v1.4.0 // indirect
-	golang.org/x/image v0.30.0 // indirect
-	golang.org/x/mod v0.27.0 // indirect
-	golang.org/x/net v0.43.0 // indirect
-	golang.org/x/sync v0.16.0 // indirect
-	golang.org/x/sys v0.35.0 // indirect
-	golang.org/x/tools v0.36.0 // indirect
+	go.yaml.in/yaml/v3 v3.0.4 // indirect
+	golang.org/x/image v0.32.0 // indirect
+	golang.org/x/mod v0.28.0 // indirect
+	golang.org/x/net v0.46.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/tools v0.37.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
