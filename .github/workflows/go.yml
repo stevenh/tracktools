@@ -14,7 +14,7 @@ jobs:
   go:
     strategy:
       matrix:
-        go: [1.24, 1.25]
+        go: [1.25]
         golangci: [v2.4.0]
         os: [ubuntu-latest, macos-latest, windows-latest]
     name: lint
@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Setup
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: '${{ matrix.go }}'
 
