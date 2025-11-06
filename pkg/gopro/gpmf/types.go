@@ -1,6 +1,6 @@
 package gpmf
 
-//go:generate stringer -type=Type -output=types_string.go
+//go:generate go tool stringer -type=Type -output=types_string.go
 
 // Type represents an encoding type.
 type Type byte
@@ -16,7 +16,7 @@ const (
 	// StringAscii single byte 'c' style ASCII character string.
 	String Type = 'c'
 
-	// Float64 64-bit double precison (IEEE 754).
+	// Float64 64-bit double precision (IEEE 754).
 	Float64 Type = 'd'
 
 	// Float32 32 bit float (IEEE 754).

@@ -14,38 +14,38 @@ jobs:
   go:
     strategy:
       matrix:
-        go: [1.22]
-        golangci: [v1.61.0]
+        go: [1.25]
+        golangci: [v2.4.0]
         os: [ubuntu-latest, macos-latest, windows-latest]
     name: lint
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Setup
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
           go-version: '${{ matrix.go }}'
 
       - name: Validate go generate / mod
         if: runner.os != 'Windows'
         run: |
-          go install golang.org/x/tools/cmd/stringer@latest
           go generate ./...
           go mod tidy
           git --no-pager diff && [[ 0 -eq $(git status --porcelain | wc -l) ]]
 
       - name: Go Lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v8
         with:
           version: ${{ matrix.golangci }}
-          args: --out-format=colored-line-number
-          skip-build-cache: true
-          skip-pkg-cache: true
+          skip-cache: true
 
       - name: Go Build
         run: go build ./...
 
       - name: Go Test
-        run: go test -race -v ./...
+        run: |
+          go version
+          go env
+          go test -race -v ./...

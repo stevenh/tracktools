@@ -166,7 +166,7 @@ func BenchmarkDistance(b *testing.B) {
 	radius := geodesic.WGS84.Radius()
 	for _, tc := range tests {
 		b.Run(tc.name, func(b *testing.B) {
-			for n := 0; n < b.N; n++ {
+			for b.Loop() {
 				r = tc.f(
 					50.857933, -0.752594,
 					50.857928, -0.752664,

@@ -16,7 +16,7 @@ type OBD struct {
 	// Throttle is the throttle position percentage.
 	Throttle *float64
 
-	// ColantTemp is the coolant temperature.
+	// CoolantTemp is the coolant temperature.
 	CoolantTemp *float64
 
 	// IntakeTemp is the air intake temperature.

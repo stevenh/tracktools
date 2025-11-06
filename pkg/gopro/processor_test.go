@@ -221,8 +221,7 @@ func TestNewProcessor(t *testing.T) {
 			p.cfg.outputTmpl = nil // This is calculated so don't try and match.
 
 			require.Equal(t, tc.expected, p.cfg)
-			require.Equal(t, `{"level":"warn","message":"test"}
-`, buf.String())
+			require.JSONEq(t, `{"level":"warn","message":"test"}`, buf.String())
 		})
 	}
 }

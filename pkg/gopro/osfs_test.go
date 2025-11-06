@@ -1,7 +1,6 @@
 package gopro
 
 import (
-	"io/fs"
 	"os"
 	"syscall"
 	"testing"
@@ -9,6 +8,18 @@ import (
 
 	"github.com/stretchr/testify/require"
 )
+
+func Test_ReadDir(t *testing.T) {
+	tf, err := os.CreateTemp(t.TempDir(), "os-test")
+	require.NoError(t, err)
+
+	name := tf.Name()
+	require.NoError(t, tf.Close())
+
+	dirs, err := os.ReadDir(name)
+	require.ErrorIs(t, err, syscall.ENOTDIR)
+	require.Empty(t, dirs)
+}
 
 func TestOSFS(t *testing.T) {
 	o := osFS{}
@@ -18,7 +29,7 @@ func TestOSFS(t *testing.T) {
 
 	name := tf.Name()
 
-	defer os.Remove(name) //nolint: errcheck
+	t.Cleanup(func() { os.Remove(name) }) //nolint: errcheck
 
 	now := time.Now().Round(0)
 	err = o.Chtimes(name, now, now)
@@ -34,7 +45,7 @@ func TestOSFS(t *testing.T) {
 
 	dirs, err := o.ReadDir(name)
 	require.ErrorIs(t, err, syscall.ENOTDIR)
-	require.Equal(t, []fs.DirEntry{}, dirs)
+	require.Empty(t, dirs)
 
 	err = o.Remove(name)
 	require.NoError(t, err)
