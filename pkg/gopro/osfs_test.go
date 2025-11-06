@@ -1,7 +1,6 @@
 package gopro
 
 import (
-	"io/fs"
 	"os"
 	"syscall"
 	"testing"
@@ -19,8 +18,7 @@ func Test_ReadDir(t *testing.T) {
 
 	dirs, err := os.ReadDir(name)
 	require.ErrorIs(t, err, syscall.ENOTDIR)
-	var expectedDirs []fs.DirEntry
-	require.Equal(t, expectedDirs, dirs)
+	require.Empty(t, dirs)
 }
 
 func TestOSFS(t *testing.T) {
@@ -47,8 +45,7 @@ func TestOSFS(t *testing.T) {
 
 	dirs, err := o.ReadDir(name)
 	require.ErrorIs(t, err, syscall.ENOTDIR)
-	var expectedDirs []fs.DirEntry
-	require.Equal(t, expectedDirs, dirs)
+	require.Empty(t, dirs)
 
 	err = o.Remove(name)
 	require.NoError(t, err)
